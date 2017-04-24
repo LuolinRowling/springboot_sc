@@ -1,5 +1,7 @@
 package com.pku.system.model;
 
+import java.util.List;
+
 /**
  * Created by jiangdongyu on 2017/4/21.
  */
@@ -13,18 +15,26 @@ public class DeviceInfo {
     private int raspberryStatus;
     private String raspberryCode;
     private int raspberryStreamStatus;
-    private int cameraTypeId;
     private int cameraStatus;
     private int computerTypeId;
     private int computerStatus;
     private int projectorTypeId;
     private int projectorStatus;
-    private CameraType cameraType;
     private ComputerType computerType;
     private SinglechipType singlechipType;
     private ProjectorType projectorType;
     private RaspberryType raspberryType;
     private Building building;
+
+    public List<Camera> getCameraList() {
+        return cameraList;
+    }
+
+    public void setCameraList(List<Camera> cameraList) {
+        this.cameraList = cameraList;
+    }
+
+    private List<Camera> cameraList;
 
     public Building getBuilding() {
         return building;
@@ -88,14 +98,6 @@ public class DeviceInfo {
 
     public void setProjectorStatus(int projectorStatus) {
         this.projectorStatus = projectorStatus;
-    }
-
-    public CameraType getCameraType() {
-        return cameraType;
-    }
-
-    public void setCameraType(CameraType cameraType) {
-        this.cameraType = cameraType;
     }
 
     public ComputerType getComputerType() {
@@ -167,14 +169,6 @@ public class DeviceInfo {
 
     public void setRaspberryTypeId(int raspberryTypeId) {
         this.raspberryTypeId = raspberryTypeId;
-    }
-
-    public int getCameraTypeId() {
-        return cameraTypeId;
-    }
-
-    public void setCameraTypeId(int cameraTypeId) {
-        this.cameraTypeId = cameraTypeId;
     }
 
     public int getComputerTypeId() {

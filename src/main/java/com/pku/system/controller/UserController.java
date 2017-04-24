@@ -1,6 +1,6 @@
 package com.pku.system.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import net.sf.json.JSONObject;
 import com.pku.system.model.Role;
 import com.pku.system.model.User;
 import com.pku.system.service.RoleService;

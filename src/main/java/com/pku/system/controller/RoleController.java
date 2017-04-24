@@ -1,15 +1,12 @@
 package com.pku.system.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import net.sf.json.JSONObject;
 import com.pku.system.model.Permission;
 import com.pku.system.model.Role;
-import com.pku.system.model.User;
 import com.pku.system.service.PermissionService;
 import com.pku.system.service.RoleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.*;

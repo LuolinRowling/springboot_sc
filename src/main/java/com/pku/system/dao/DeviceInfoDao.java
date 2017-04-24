@@ -21,12 +21,12 @@ public interface DeviceInfoDao {
     public DeviceInfo selectByRaspberryCode(String raspberryCode);
 
     @Select("SELECT " +
-            "di.id,di.buildingNum," +
+            "di.id," +
+            "di.buildingNum," +
             "di.classroomNum," +
             "s.singlechipTypeName," +
             "r.raspberryTypeName," +
             "di.raspberryCode," +
-            "ca.cameraTypeName," +
             "co.computerTypeName," +
             "co.memorySize," +
             "co.diskSize," +
@@ -35,7 +35,6 @@ public interface DeviceInfoDao {
             "FROM device_info di " +
             "INNER JOIN singlechipType s ON di.singlechipTypeId=s.singlechipTypeId" +
             "INNER JOIN raspberryType r ON di.raspberryTypeId=r.raspberryTypeId" +
-            "INNER JOIN cameraType ca ON di.cameraTypeId=ca.cameraTypeId" +
             "INNER JOIN computerType co ON di.computerTypeId=co.computerTypeId" +
             "INNER JOIN projectorType p ON di.projectorTypeId=p.projectorTypeId")
     public List<DeviceInfo> getAllDeviceInfo();
