@@ -78,8 +78,8 @@ public class RoleController {
     }
 
     @ApiOperation(value = "根据id查询角色", notes = "根据id查询角色notes", produces = "application/json")
-    @RequestMapping(value="/{id}", method=RequestMethod.GET)
-    public String getRole(@PathVariable("id") int id) {
+    @RequestMapping(value="/{rid}", method=RequestMethod.GET)
+    public String getRole(@PathVariable("rid") int rid) {
         // 处理"/roles/{id}"的GET请求，用来获取url中id值的Role信息
         // url中的id可通过@PathVariable绑定到函数的参数中
         JSONObject jsonObject = new JSONObject();
@@ -87,7 +87,7 @@ public class RoleController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        Role role = roleService.selectById(id);
+        Role role = roleService.selectById(rid);
         if(role == null){
             jsonData.put("judge","-1");
         }else{
@@ -99,8 +99,8 @@ public class RoleController {
     }
 
     @ApiOperation(value = "根据id修改角色", notes = "根据id修改角色notes", produces = "application/json")
-    @RequestMapping(value="/{id}", method=RequestMethod.PUT)
-    public String putRole(@PathVariable("id") int id,
+    @RequestMapping(value="/{rid}", method=RequestMethod.PUT)
+    public String putRole(@PathVariable("rid") int rid,
                           @RequestParam(value="r_name")String r_name,
                           @RequestParam(value="p_ids")List<Integer> p_ids) {
         // 处理"/roles/{id}"的PUT请求，用来更新Role信息
@@ -113,9 +113,9 @@ public class RoleController {
             jsonData.put("judge","-1");
         }else{
             try{
-                System.out.println(r_name+" "+p_ids+" "+id);
+                System.out.println(r_name+" "+p_ids+" "+rid);
                 Role role = new Role();
-                role.setR_id(id);
+                role.setR_id(rid);
                 role.setR_name(r_name);
                 role.setP_ids(p_ids);
 
@@ -132,20 +132,20 @@ public class RoleController {
     }
 
     @ApiOperation(value = "根据id删除角色", notes = "根据id删除角色notes", produces = "application/json")
-    @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-    public String deleteRole(@PathVariable("id") int id) {
+    @RequestMapping(value="/{rid}", method=RequestMethod.DELETE)
+    public String deleteRole(@PathVariable("rid") int rid) {
         // 处理"/users/{id}"的DELETE请求，用来删除User
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(roleService.selectById(id)==null){
+        if(roleService.selectById(rid)==null){
             jsonData.put("judge","-1");
         }else{
             try{
 
-                roleService.deleteRole(id);
+                roleService.deleteRole(rid);
                 //删除成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){

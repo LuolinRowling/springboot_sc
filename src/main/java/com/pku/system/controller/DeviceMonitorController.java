@@ -67,18 +67,18 @@ public class DeviceMonitorController {
     }
 
     @ApiOperation(value = "根据id发送修改单个教室设备状态消息", notes = "根据id发送修改单个教室设备状态消息notes", produces = "application/json")
-    @RequestMapping(value="/deviceMonitor/{id}", method= RequestMethod.GET)
-    public String sendDeviceMonitorSingle(@PathVariable("id") int id,
-                                         @RequestParam(value="device")String device,
-                                         @RequestParam(value="operation")String operation) {
+    @RequestMapping(value="/deviceMonitor/{dmid}", method= RequestMethod.GET)
+    public String sendDeviceMonitorSingle(@PathVariable("dmid") int dmid,
+                                          @RequestParam(value="device")String device,
+                                          @RequestParam(value="operation")String operation) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
         try{
-            System.out.println(id+" "+device);
-            deviceInfo = deviceInfoService.selectById(id);
+            System.out.println(dmid+" "+device);
+            deviceInfo = deviceInfoService.selectById(dmid);
 
             NewWebSocket nbs = new NewWebSocket();
 
@@ -107,8 +107,8 @@ public class DeviceMonitorController {
     }
 
     @ApiOperation(value = "根据id发送修改单个教室摄像头状态消息", notes = "根据id发送修改单个教室摄像头状态消息notes", produces = "application/json")
-    @RequestMapping(value="/deviceMonitor/camera/{id}", method= RequestMethod.GET)
-    public String sendCameraMonitorSingle(@PathVariable("cid") int id,
+    @RequestMapping(value="/deviceMonitor/camera/{cid}", method= RequestMethod.GET)
+    public String sendCameraMonitorSingle(@PathVariable("cid") int cid,
                                           @RequestParam(value="operation")String operation) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
@@ -116,14 +116,20 @@ public class DeviceMonitorController {
         JSONObject jsonData = new JSONObject();
 
         try{
-            System.out.println(id);
+            System.out.println(cid);
 
-            camera = cameraService.selectById(id);
+            camera = cameraService.selectById(cid);
+            deviceInfo = deviceInfoService.selectById(camera.getDid());
 
             NewWebSocket nbs = new NewWebSocket();
 
+            String orderOpen = Constant.OPEN+"_camera";
+            String orderClose = Constant.CLOSE+"_camera";
 
+            nbs.sendDeviceMessageToOne(deviceInfo.getRaspberryCode(),
+                operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
 
+            dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
 
             //修改成功
             jsonData.put("judge","0");

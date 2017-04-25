@@ -87,8 +87,8 @@ public class UserController {
     }
 
     @ApiOperation(value = "根据id查询用户", notes = "根据id查询用户notes", produces = "application/json")
-    @RequestMapping(value="/{id}", method=RequestMethod.GET)
-    public String getUser(@PathVariable("id") int id) {
+    @RequestMapping(value="/{uid}", method=RequestMethod.GET)
+    public String getUser(@PathVariable("uid") int uid) {
         // 处理"/users/{id}"的GET请求，用来获取url中id值的User信息
         // url中的id可通过@PathVariable绑定到函数的参数中
         JSONObject jsonObject = new JSONObject();
@@ -96,7 +96,7 @@ public class UserController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        User user = userService.selectById(id);
+        User user = userService.selectById(uid);
         if(user == null){
             jsonData.put("judge","-9");
         }else{
@@ -108,8 +108,8 @@ public class UserController {
     }
 
     @ApiOperation(value = "根据id修改用户", notes = "根据id修改用户notes", produces = "application/json")
-    @RequestMapping(value="/{id}", method=RequestMethod.PUT)
-    public String putUser(@PathVariable("id") int id,
+    @RequestMapping(value="/{uid}", method=RequestMethod.PUT)
+    public String putUser(@PathVariable("uid") int uid,
                           @RequestParam(value="username")String username,
                           @RequestParam(value="password")String password,
                           @RequestParam(value="r_id")int r_id,
@@ -128,7 +128,7 @@ public class UserController {
             jsonData.put("judge","-2");
         }else{
             try{
-                System.out.println(username+" "+password+" "+id+" "+r_id);
+                System.out.println(username+" "+password+" "+uid+" "+r_id);
                 User user = new User();
                 user.setUsername(username);
                 user.setPassword(password);
@@ -146,21 +146,21 @@ public class UserController {
     }
 
     @ApiOperation(value = "根据id删除用户", notes = "根据id删除用户notes", produces = "application/json")
-    @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-    public String deleteUser(@PathVariable("id") int id) {
+    @RequestMapping(value="/{uid}", method=RequestMethod.DELETE)
+    public String deleteUser(@PathVariable("uid") int uid) {
         // 处理"/users/{id}"的DELETE请求，用来删除User
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(userService.selectById(id)==null){
+        if(userService.selectById(uid)==null){
             //判断用户名是否存在
             jsonData.put("judge","-1");
         }else{
             try{
 
-                userService.deleteUser(id);
+                userService.deleteUser(uid);
                 //删除成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){

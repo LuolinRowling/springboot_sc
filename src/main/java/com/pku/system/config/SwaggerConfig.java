@@ -1,4 +1,4 @@
-package com.pku.system.Config;
+package com.pku.system.config;
 
 import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiOperation;
