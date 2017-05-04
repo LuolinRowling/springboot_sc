@@ -19,6 +19,16 @@ public class WSocketMessage {
     //回传deviceInfo中所有status 状态码
     private DeviceInfo deviceInfo;
 
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public String getNowTime() {
         return nowTime;
     }

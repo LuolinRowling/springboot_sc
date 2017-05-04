@@ -9,6 +9,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by jiangdongyu on 2017/4/25.
  */
 @Api(value="注册登录注销",tags = {"注册登录注销API"},description = "描述信息")
-@RestController
+@Controller
 public class LoginController {
     //自动注入业务层的userService类
     @Autowired
@@ -33,7 +34,7 @@ public class LoginController {
      * @return
      */
     @ApiOperation(value = "注册", notes = "注册notes", produces = "application/json")
-    @RequestMapping(value="/login", method= RequestMethod.GET)
+    @RequestMapping(value="/login")
     public @ResponseBody
     String login(User user, HttpServletRequest request){
         Subject subject = SecurityUtils.getSubject();//使用shiro
@@ -63,8 +64,14 @@ public class LoginController {
      * @return
      */
     @ApiOperation(value = "注销", notes = "注销notes", produces = "application/json")
-    @RequestMapping(value="/logout", method = RequestMethod.POST)
+    @RequestMapping(value="/logout", method = RequestMethod.GET)
     public String logout(HttpServletRequest request){
+        try {
+            //退出
+            SecurityUtils.getSubject().logout();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
         request.getSession().removeAttribute("user");
         return "redirect:/login";
     }
