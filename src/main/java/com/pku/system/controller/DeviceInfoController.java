@@ -45,11 +45,11 @@ public class DeviceInfoController {
         List<RaspberryType> raspberryTypeList = raspberryTypeService.getAllRaspberryType();
         List<SinglechipType> singlechipTypeList = singlechipTypeService.getAllSinglechipType();
 
-        jsonData.put("cameraTypelist",cameraTypeList);
-        jsonData.put("computerTypelist",computerTypeList);
-        jsonData.put("projectorTypelist",projectorTypeList);
-        jsonData.put("raspberryTypelist",raspberryTypeList);
-        jsonData.put("singlechipTypelist",singlechipTypeList);
+        jsonData.put("cameraTypeList",cameraTypeList);
+        jsonData.put("computerTypeList",computerTypeList);
+        jsonData.put("projectorTypeList",projectorTypeList);
+        jsonData.put("raspberryTypeList",raspberryTypeList);
+        jsonData.put("singleChipTypeList",singlechipTypeList);
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();

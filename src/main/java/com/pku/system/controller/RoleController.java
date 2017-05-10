@@ -37,7 +37,7 @@ public class RoleController {
 
         List<Role> roleList = roleService.getAllRole();
 
-        jsonData.put("rolelist",roleList);
+        jsonData.put("roleList",roleList);
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();

@@ -39,8 +39,8 @@ public class UserController {
         List<User> userList= userService.getAllUser();
         List<Role> roleList = roleService.getAllRole();
 
-        jsonData.put("userlist",userList);
-        jsonData.put("rolelist",roleList);
+        jsonData.put("userList",userList);
+        jsonData.put("roleList",roleList);
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();

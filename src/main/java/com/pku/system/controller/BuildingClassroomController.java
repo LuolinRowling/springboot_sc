@@ -44,7 +44,7 @@ public class BuildingClassroomController {
             buildingList.get(i).setClassroomList(classroomList);
 
             jsonArray.add(buildingList.get(i));
-            jsonData.put("buildingClassroomlist",jsonArray);
+            jsonData.put("buildingClassroomList",jsonArray);
         }
 
         jsonObject.put("data",jsonData);
