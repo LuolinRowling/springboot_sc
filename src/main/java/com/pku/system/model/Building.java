@@ -1,11 +1,23 @@
 package com.pku.system.model;
 
+import java.util.List;
+
 /**
  * Created by jiangdongyu on 2017/4/21.
  */
 public class Building {
     private int id;
     private String buildingNum;
+
+    public List<Classroom> getClassroomList() {
+        return classroomList;
+    }
+
+    public void setClassroomList(List<Classroom> classroomList) {
+        this.classroomList = classroomList;
+    }
+
+    private List<Classroom> classroomList;
 
     public int getId() {
         return id;
