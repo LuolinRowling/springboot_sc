@@ -10,18 +10,18 @@ import java.util.List;
  */
 @Mapper
 public interface CameraDao {
-    @Select("select * from camera where id = #{id}")
-    public Camera selectById(int id);
+    @Select("select * from camera where cameraId = #{cameraId}")
+    public Camera selectById(int cameraId);
 
     @Select("select * from camera where did = #{did}")
     public List<Camera> selectByDeviceId(int did);
 
-    @Insert("insert into camera (id,cameraTypeId,cameraStatus,cameraAngle,did) values (#{id},#{cameraTypeId},#{cameraStatus},#{cameraAngle},#{did})")
+    @Insert("insert into camera (cameraId,cameraTypeId,cameraStatus,cameraAngle,did) values (#cameraId},#{cameraTypeId},#{cameraStatus},#{cameraAngle},#{did})")
     public void addCamera(Camera camera);
 
-    @Update("update camera set cameraTypeId=#{cameraTypeId},cameraStatus=#{cameraStatus},cameraAngle=#{cameraAngle} where id=#{id}")
+    @Update("update camera set cameraTypeId=#{cameraTypeId},cameraStatus=#{cameraStatus},cameraAngle=#{cameraAngle} where cameraId=#{cameraId}")
     public void updateCamera(Camera camera);
 
-    @Delete("delete from camera where id=#{id}")
-    public void deleteCamera(int id);
+    @Delete("delete from camera where cameraId=#{cameraId}")
+    public void deleteCamera(int cameraId);
 }

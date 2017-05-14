@@ -21,12 +21,9 @@ public interface DeviceInfoDao {
     public DeviceInfo selectByRaspberryCode(String raspberryCode);
 
     @Select("SELECT " +
-            "di.id," +
-            "di.buildingNum," +
-            "di.classroomNum," +
+            "di.*," +
             "s.singlechipTypeName," +
             "r.raspberryTypeName," +
-            "di.raspberryCode," +
             "co.computerTypeName," +
             "co.memorySize," +
             "co.diskSize," +
@@ -54,13 +51,13 @@ public interface DeviceInfoDao {
     @Delete("delete from device_info where id=#{id}")
     public void deleteDeviceInfo(int id);
 
-    @Select("select id,buildingNum,classroomNum,singlechipStatus,raspberryStatus,raspberryCode,cameraStatus,computerStatus,projectorStatus from device_info")
+    @Select("select * from device_info")
     public List<DeviceInfo> getAllDeviceInfoStatus();
 
-    @Select("select DISTINCT buildingNum from device_info where raspberryStreamStatus=#{raspberryStreamStatus}")
+    @Select("select id,buildingNum,classroomNum,raspberryStatus,raspberryStreamStatus,raspberryCode from device_info")
     public List<DeviceInfo> getRaspberryStreamStatus();
 
-    @Select("select classroomNum from device_info where buildingNum=#{0} and raspberryStreamStatus=#{1}")
+    @Select("select DISTINCT buildingNum from device_info where raspberryStreamStatus=#{raspberryStreamStatus}")
     public List<DeviceInfo> getAllPushBuildingList(int raspberryStreamStatus);
 
     @Select("select classroomNum from device_info where buildingNum=#{0} and raspberryStreamStatus=#{1}")

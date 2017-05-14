@@ -58,5 +58,7 @@ public class Constant {
     public static String PUSHHEADERBAIDU = "rtmp://push.bcelive.com/live/";
     public static String PULLHEADERBAIDU = "rtmp://play.bcelive.com/live/";
 
+    public static String STREAMADDRESS = "rtmp://video.airforceuav.com:1935/live/";
+
     public static long MESSAGETIMEOUT = 60*1000;
 }

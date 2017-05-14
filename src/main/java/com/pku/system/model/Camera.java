@@ -4,18 +4,18 @@ package com.pku.system.model;
  * Created by jiangdongyu on 2017/4/24.
  */
 public class Camera {
-    private int id;
+    private int cameraId;
     private int cameraTypeId;
     private int cameraStatus;
     private String cameraAngle;
     private int did;
 
-    public int getId() {
-        return id;
+    public int getCameraId() {
+        return cameraId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCameraId(int cameraId) {
+        this.cameraId = cameraId;
     }
 
     public int getCameraTypeId() {

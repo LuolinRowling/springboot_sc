@@ -67,7 +67,7 @@ public class DeviceMonitorController {
     }
 
     @ApiOperation(value = "根据id发送修改单个教室设备状态消息", notes = "根据id发送修改单个教室设备状态消息notes", produces = "application/json")
-    @RequestMapping(value="/deviceMonitor/{dmid}", method= RequestMethod.GET)
+    @RequestMapping(value="/{dmid}", method= RequestMethod.GET)
     public String sendDeviceMonitorSingle(@PathVariable("dmid") int dmid,
                                           @RequestParam(value="device")String device,
                                           @RequestParam(value="operation")String operation) {
@@ -107,8 +107,10 @@ public class DeviceMonitorController {
     }
 
     @ApiOperation(value = "根据id发送修改单个教室摄像头状态消息", notes = "根据id发送修改单个教室摄像头状态消息notes", produces = "application/json")
-    @RequestMapping(value="/deviceMonitor/camera/{cid}", method= RequestMethod.GET)
+    @RequestMapping(value="/camera/{cid}", method= RequestMethod.GET)
     public String sendCameraMonitorSingle(@PathVariable("cid") int cid,
+                                          @RequestParam(value="code")int code,
+                                          @RequestParam(value="did")int did,
                                           @RequestParam(value="operation")String operation) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
@@ -119,12 +121,13 @@ public class DeviceMonitorController {
             System.out.println(cid);
 
             camera = cameraService.selectById(cid);
-            deviceInfo = deviceInfoService.selectById(camera.getDid());
+
+            deviceInfo = deviceInfoService.selectById(did);
 
             NewWebSocket nbs = new NewWebSocket();
 
-            String orderOpen = Constant.OPEN+"_camera";
-            String orderClose = Constant.CLOSE+"_camera";
+            String orderOpen = Constant.OPEN+"_camera_"+code;
+            String orderClose = Constant.CLOSE+"_camera_"+code;
 
             nbs.sendDeviceMessageToOne(deviceInfo.getRaspberryCode(),
                 operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
@@ -142,7 +145,7 @@ public class DeviceMonitorController {
     }
 
     @ApiOperation(value = "发消息修改全部教室设备状态", notes = "发消息修改全部教室设备状态notes", produces = "application/json")
-    @RequestMapping(value="/deviceMonitor/all", method= RequestMethod.GET)
+    @RequestMapping(value="/all", method= RequestMethod.GET)
     public String sendDeviceMonitorAll(@RequestParam(value="operation")String operation) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");

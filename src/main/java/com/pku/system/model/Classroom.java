@@ -7,15 +7,6 @@ public class Classroom {
     private int id;
     private String classroomNum;
     private int b_id;
-    private Building building;
-
-    public Building getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(Building building) {
-        this.building = building;
-    }
 
     public int getId() {
         return id;

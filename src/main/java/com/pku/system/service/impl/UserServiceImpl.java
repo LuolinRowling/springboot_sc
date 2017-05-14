@@ -22,6 +22,19 @@ public class UserServiceImpl implements UserService {
     @Autowired
     RoleService roleService;
 
+    //登录方法的实现,从jsp页面获取username与password
+    public boolean login(String username, String password) {
+        //对输入账号进行查询,取出数据库中保存对信息
+        User user = userDao.selectByName(username);
+        if (user != null) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password))
+                return true;
+
+        }
+        return false;
+
+    }
+
     @Override
     @Transactional
     public List<User> getAllUser() {

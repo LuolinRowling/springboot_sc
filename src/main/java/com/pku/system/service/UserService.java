@@ -10,6 +10,14 @@ import java.util.Set;
  */
 public interface UserService {
     /**
+     * 用户登录
+     * @param username
+     * @param password
+     * @return
+     */
+    public boolean login(String username,String password);
+
+    /**
      * 查询全部用户
      * @return
      */

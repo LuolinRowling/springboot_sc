@@ -1,5 +1,6 @@
 package com.pku.system.util;
 
+import com.pku.system.model.Camera;
 import com.pku.system.model.DeviceInfo;
 import com.pku.system.model.WSocketMessage;
 
@@ -79,15 +80,27 @@ public class DealMessage {
      * @param dic
      * @param wSocketMessageListCenter
      */
-    public void deviceOperation(String[] msgp, DeviceInfo deviceInfo, String msg, String ownId, List<WSocketMessage> wSocketMessageList, Map<String, String> dic, List<WSocketMessage> wSocketMessageListCenter){
+    public void deviceOperation(String[] msgp, DeviceInfo deviceInfo, String msg, String ownId, List<WSocketMessage> wSocketMessageList, Map<String, String> dic, List<WSocketMessage> wSocketMessageListCenter,List<Camera> cameraList){
         //处理设备开关
         if(msgp[0].equals("success")){
-            if(!msgp[2].equals("all")){
+            if(msgp[2].equals("all")){//操作全部
+                //addMessageList("success","device",msgp[1].equals("open")?"开启所有成功":"关闭所有成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                deviceInfo.setCameraStatus(msgp[1].equals("open")?1:0);
+                deviceInfo.setComputerStatus(msgp[1].equals("open")?1:0);
+                deviceInfo.setProjectorStatus(msgp[1].equals("open")?1:0);
+                for(Camera camera: cameraList){
+                    camera.setCameraStatus(msgp[1].equals("open")?1:0);
+                }
+            }else if(msgp[2].equals("camera")){//处理摄像头开关
+                Camera camera = cameraList.get(Integer.parseInt(msgp[3]));//获得操作的具体camera
+                camera.setCameraStatus(msgp[1].equals("open")?1:0);
+                //addMessageList("success","device",msgp[1].equals("open")?"开启camera成功":"关闭camera成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+            }else{//处理电脑，投影仪开关
                 String device = msgp[2].substring(0,1).toUpperCase()+msgp[2].substring(1);//首字母大写
                 try {
                     Method method = deviceInfo.getClass().getMethod("set"+device+"Status",int.class);//反射机制
                     method.invoke(deviceInfo,msgp[1].equals("open")?1:0);//1在线，0离线
-                    addMessageList("success","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"成功":"关闭"+dic.get(msgp[2])+"成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                    //addMessageList("success","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"成功":"关闭"+dic.get(msgp[2])+"成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
 
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
@@ -96,18 +109,13 @@ public class DealMessage {
                 } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
-            }else{
-                addMessageList("success","device",msgp[1].equals("open")?"开启所有成功":"关闭所有成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
-                deviceInfo.setCameraStatus(msgp[1].equals("open")?1:0);
-                deviceInfo.setComputerStatus(msgp[1].equals("open")?1:0);
-                deviceInfo.setProjectorStatus(msgp[1].equals("open")?1:0);
             }
 
         }else if(msgp[0].equals("fail")){
 
             if(msg.contains("singlechip")){//一旦收到操作单片机失败，即把其状态置为异常
                 deviceInfo.setSinglechipStatus(2);
-                addMessageList("fail","device","单片机异常",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                //addMessageList("fail","device","单片机异常",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
             }
 
             String returnM = msgp[1].equals("open")?"开启所有失败 ":"关闭所有失败 ";
@@ -134,14 +142,14 @@ public class DealMessage {
                     deviceInfo.setProjectorStatus(2);
                 }
 
-                addMessageList("fail","device",returnM,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                //addMessageList("fail","device",returnM,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
 
             }else{//单一操作，即操作单个设备
                 String device = msgp[2].substring(0,1).toUpperCase()+msgp[2].substring(1);//首字母大写
                 try {
                     Method method = deviceInfo.getClass().getMethod("set"+device+"Status",int.class);
                     method.invoke(deviceInfo,2);
-                    addMessageList("fail","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"失败":"关闭"+dic.get(msgp[2])+"失败",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                    //addMessageList("fail","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"失败":"关闭"+dic.get(msgp[2])+"失败",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
                 }catch (IllegalAccessException e) {
