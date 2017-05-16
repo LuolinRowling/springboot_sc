@@ -2,9 +2,6 @@ package com.pku.system.model;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/21.
- */
 public class DeviceInfo {
     private int id;
     private String buildingNum;

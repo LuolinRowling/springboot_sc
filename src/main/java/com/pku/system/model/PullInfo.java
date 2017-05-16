@@ -1,8 +1,5 @@
 package com.pku.system.model;
 
-/**
- * Created by jiangdongyu on 2017/4/21.
- */
 public class PullInfo {
     private int id;
     private String buildingNum;

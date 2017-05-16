@@ -14,9 +14,6 @@ import org.apache.shiro.subject.PrincipalCollection;
 import javax.annotation.Resource;
 import java.util.Set;
 
-/**
- * Created by jiangdongyu on 2017/4/25.
- */
 public class MyRealm extends AuthorizingRealm {
     @Resource
     private UserService userService;

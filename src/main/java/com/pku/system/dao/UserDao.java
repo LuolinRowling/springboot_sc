@@ -6,9 +6,6 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by jiangdongyu on 2017/4/13.
- */
 @Mapper
 public interface UserDao{
     @Select("SELECT u.id,u.username,u.password,r.r_id,r.r_name FROM tb_user u INNER JOIN tb_role r ON u.r_id=r.r_id")

@@ -5,9 +5,6 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/21.
- */
 @Mapper
 public interface CameraTypeDao {
     @Select("select * from cameraType where cameraTypeId = #{cameraTypeId}")

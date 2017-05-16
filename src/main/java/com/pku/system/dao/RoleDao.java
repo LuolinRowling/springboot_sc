@@ -5,9 +5,6 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/16.
- */
 @Mapper
 public interface RoleDao {
     @Select("select r_id,r_name,p_ids as p_idsStr from tb_role where r_id = #{r_id}")

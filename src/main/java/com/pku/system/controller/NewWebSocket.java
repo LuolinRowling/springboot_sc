@@ -1,23 +1,14 @@
 package com.pku.system.controller;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 //该注解用来指定一个URI，客户端可以通过这个URI来连接到WebSocket。
 
-import com.pku.system.dao.DeviceInfoDao;
-import com.pku.system.model.Camera;
-import com.pku.system.model.DeviceInfo;
 import com.pku.system.model.WSocketMessage;
 import com.pku.system.service.CameraService;
 import com.pku.system.service.DeviceInfoService;
 import com.pku.system.util.DealMessage;
 import com.pku.system.util.ParseData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.socket.server.standard.SpringConfigurator;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;

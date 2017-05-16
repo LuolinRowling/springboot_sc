@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Created by jiangdongyu on 2017/4/25.
- */
 @Api(value="注册登录注销",tags = {"注册登录注销API"},description = "描述信息")
 @Controller
 public class LoginController {

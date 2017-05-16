@@ -4,9 +4,6 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONTokener;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 public class ParseData {
     public int code;
     public String smsg;

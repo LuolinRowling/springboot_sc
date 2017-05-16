@@ -9,9 +9,6 @@
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
 //
-///**
-// * Created by jiangdongyu on 2017/5/4.
-// */
 //@Configuration
 //public class ShiroConfiguration {
 //    @Bean

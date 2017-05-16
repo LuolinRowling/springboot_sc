@@ -1,8 +1,5 @@
 package com.pku.system.model;
 
-/**
- * Created by jiangdongyu on 2017/4/21.
- */
 public class SinglechipType {
     private int singlechipTypeId;
     private String singlechipTypeName;

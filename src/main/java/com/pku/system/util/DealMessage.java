@@ -12,9 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 public class DealMessage {
     /**
      * 添加消息到列表中

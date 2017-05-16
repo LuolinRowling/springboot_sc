@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/25.
- */
 @Api(value="设备信息管理",tags = {"设备信息管理API"},description = "描述信息")
 @RestController
 @RequestMapping("/deviceInfos")// 通过这里配置使下面的映射都在/deviceInfos下

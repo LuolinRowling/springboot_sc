@@ -11,9 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by jiangdongyu on 2017/4/16.
- */
 @Service
 public class RoleServiceImpl implements RoleService {
     @Autowired

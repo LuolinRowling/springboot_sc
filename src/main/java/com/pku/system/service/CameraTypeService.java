@@ -4,9 +4,6 @@ import com.pku.system.model.CameraType;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/22.
- */
 public interface CameraTypeService {
     /**
      * 根据id查询

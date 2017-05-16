@@ -9,9 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/25.
- */
 @Api(value="消息管理",tags = {"消息管理API"},description = "描述信息")
 @RestController
 @RequestMapping("/messages")// 通过这里配置使下面的映射都在/messages下

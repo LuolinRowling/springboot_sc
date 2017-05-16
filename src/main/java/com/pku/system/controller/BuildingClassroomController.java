@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/5/3.
- */
 @Api(value="教学楼教室信息管理",tags = {"教学楼教室信息管理API"},description = "描述信息")
 @RestController
 @RequestMapping("/buildingClassrooms")

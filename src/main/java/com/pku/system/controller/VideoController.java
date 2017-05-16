@@ -21,9 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 @Api(value="视频管理",tags = {"视频管理API"},description = "视频流调度")
 @RestController
 @RequestMapping("/videos")// 通过这里配置使下面的映射都在/videos下

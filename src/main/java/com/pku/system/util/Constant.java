@@ -1,8 +1,5 @@
 package com.pku.system.util;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 public class Constant {
     //设备管理常量
     public static String OPEN = "open";

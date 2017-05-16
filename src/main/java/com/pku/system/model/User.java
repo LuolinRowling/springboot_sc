@@ -1,10 +1,5 @@
 package com.pku.system.model;
 
-import io.swagger.annotations.ApiModel;
-
-/**
- * Created by jiangdongyu on 2017/4/13.
- */
 public class User{
     private int id;
     private String username;

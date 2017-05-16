@@ -5,9 +5,6 @@ import com.pku.system.model.Role;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by jiangdongyu on 2017/4/16.
- */
 public interface RoleService {
     /**
      * 根据id查询角色

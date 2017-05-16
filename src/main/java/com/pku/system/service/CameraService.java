@@ -4,9 +4,6 @@ import com.pku.system.model.Camera;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 public interface CameraService {
     /**
      * 根据id查询摄像头

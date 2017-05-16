@@ -5,9 +5,6 @@ import com.pku.system.model.User;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by jiangdongyu on 2017/4/13.
- */
 public interface UserService {
     /**
      * 用户登录

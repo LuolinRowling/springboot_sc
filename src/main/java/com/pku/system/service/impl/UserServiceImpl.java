@@ -12,9 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by jiangdongyu on 2017/4/13.
- */
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired

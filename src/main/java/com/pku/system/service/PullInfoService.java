@@ -2,9 +2,6 @@ package com.pku.system.service;
 
 import com.pku.system.model.PullInfo;
 
-/**
- * Created by jiangdongyu on 2017/4/22.
- */
 public interface PullInfoService {
     /**
      * 查询

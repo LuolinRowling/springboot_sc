@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 @Api(value="远程设备管理",tags = {"远程设备管理API"},description = "描述信息")
 @RestController
 @RequestMapping("/deviceMonitor")// 通过这里配置使下面的映射都在/deviceMonitor下

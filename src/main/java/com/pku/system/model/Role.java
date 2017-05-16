@@ -6,9 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/16.
- */
 public class Role {
     private int r_id;
     private String r_name;

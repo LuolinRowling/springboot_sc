@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 @Component
 public class TimerTask {
     @Autowired

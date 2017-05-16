@@ -4,9 +4,6 @@ import com.pku.system.model.ProjectorType;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/22.
- */
 public interface ProjectorTypeService {
     /**
      * 根据id查询

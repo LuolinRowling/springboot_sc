@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/22.
- */
 @Service
 public class ProjectorTypeServiceImpl implements ProjectorTypeService {
     @Autowired

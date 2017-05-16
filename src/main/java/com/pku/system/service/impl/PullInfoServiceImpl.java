@@ -6,9 +6,6 @@ import com.pku.system.service.PullInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by jiangdongyu on 2017/4/22.
- */
 @Service
 public class PullInfoServiceImpl implements PullInfoService {
     @Autowired

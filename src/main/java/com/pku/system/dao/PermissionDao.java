@@ -6,9 +6,6 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/21.
- */
 @Mapper
 public interface PermissionDao {
     @Select("select * from tb_permission where id = #{id}")

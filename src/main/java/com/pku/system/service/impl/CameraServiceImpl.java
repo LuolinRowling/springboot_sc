@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/24.
- */
 @Service
 public class CameraServiceImpl implements CameraService {
     @Autowired

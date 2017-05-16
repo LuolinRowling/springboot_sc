@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Created by jiangdongyu on 2017/4/13.
- */
 @Api(value="用户管理",tags = {"用户管理API"},description = "描述信息")
 @RestController
 @RequestMapping(value = "/users") // 通过这里配置使下面的映射都在/users下
