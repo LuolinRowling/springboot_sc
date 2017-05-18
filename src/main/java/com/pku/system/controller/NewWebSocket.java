@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  类似Servlet的注解mapping。无需在web.xml中配置。
  * ownId为发起人
- * configurator = SpringConfigurator.class是为了使该类可以通过Spring注入。
  */
 @ServerEndpoint(value = "/websocket/{ownId}")
 @Component

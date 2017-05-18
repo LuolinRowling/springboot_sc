@@ -36,6 +36,11 @@ public class UserController {
         List<User> userList= userService.getAllUser();
         List<Role> roleList = roleService.getAllRole();
 
+        for(int i=0;i<userList.size();i++){
+            Role role = roleService.selectById(userList.get(i).getR_id());
+            userList.get(i).setRole(role);
+        }
+
         jsonData.put("userList",userList);
         jsonData.put("roleList",roleList);
 
@@ -113,9 +118,12 @@ public class UserController {
         if(user.getUsername().length()==0){
             //判断用户名是否为空
             jsonData.put("judge","-1");
+        }else if(user.getPassword().length()==0){
+            //判断密码是否为空
+            jsonData.put("judge","-2");
         }else if(userService.selectByName(user.getUsername())!=null&&judge){
             //判断用户名是否存在
-            jsonData.put("judge","-2");
+            jsonData.put("judge","-3");
         }else{
             try{
                 userService.updateUser(user);
