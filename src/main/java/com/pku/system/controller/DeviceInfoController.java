@@ -42,9 +42,9 @@ public class DeviceInfoController {
         List<RaspberryType> raspberryTypeList = raspberryTypeService.getAllRaspberryType();
         List<SinglechipType> singlechipTypeList = singlechipTypeService.getAllSinglechipType();
 
+        jsonData.put("projectorTypeList",projectorTypeList);
         jsonData.put("cameraTypeList",cameraTypeList);
         jsonData.put("computerTypeList",computerTypeList);
-        jsonData.put("projectorTypeList",projectorTypeList);
         jsonData.put("raspberryTypeList",raspberryTypeList);
         jsonData.put("singleChipTypeList",singlechipTypeList);
 
@@ -54,39 +54,31 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "添加电脑类型", notes = "添加电脑类型notes", produces = "application/json")
     @RequestMapping(value="/computerType/", method=RequestMethod.POST)
-    public String postComputerType(@RequestParam(value="computerTypeName")String computerTypeName,
-                                   @RequestParam(value="memorySize")String memorySize,
-                                   @RequestParam(value="diskSize")String diskSize,
-                                   @RequestParam(value="operatingSystem")String operatingSystem) {
+    @ResponseBody
+    public String postComputerType(@RequestBody ComputerType computerType) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(computerTypeName.length()==0){
+        if(computerType.getComputerTypeName().length()==0){
             //判断电脑类型是否为空
             jsonData.put("judge","-1");
-        }else if(memorySize.length()==0){
+        }else if(computerType.getMemorySize().length()==0){
             //判断内存大小是否为空
             jsonData.put("judge","-2");
-        }else if(diskSize.length()==0){
+        }else if(computerType.getDiskSize().length()==0){
             //判断硬盘大小是否为空
             jsonData.put("judge","-3");
-        }else if(operatingSystem.length()==0){
+        }else if(computerType.getOperatingSystem().length()==0){
             //判断操作系统信息是否为空
             jsonData.put("judge","-4");
-        }else if(computerTypeService.selectByAll(computerTypeName,memorySize,diskSize,operatingSystem)!=null){
+        }else if(computerTypeService.selectByAll(computerType.getComputerTypeName(),computerType.getMemorySize(),computerType.getDiskSize(),computerType.getOperatingSystem())!=null){
             //判断电脑设备是否存在
             jsonData.put("judge","-5");
         }else{
             try{
-                ComputerType computerType = new ComputerType();
-                computerType.setComputerTypeName(computerTypeName);
-                computerType.setMemorySize(memorySize);
-                computerType.setDiskSize(diskSize);
-                computerType.setOperatingSystem(operatingSystem);
-
                 computerTypeService.addComputerType(computerType);
                 //添加成功
                 jsonData.put("judge","0");
@@ -121,15 +113,18 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "根据id修改电脑类型", notes = "根据id修改电脑类型notes", produces = "application/json")
     @RequestMapping(value="/computerType/{coid}", method=RequestMethod.PUT)
+    @ResponseBody
     public String putComputerType(@PathVariable("coid") int coid,
-                                  @RequestParam(value="computerTypeName")String computerTypeName,
-                                  @RequestParam(value="memorySize")String memorySize,
-                                  @RequestParam(value="diskSize")String diskSize,
-                                  @RequestParam(value="operatingSystem")String operatingSystem) {
+                                  @RequestBody ComputerType computerType) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String computerTypeName = computerType.getComputerTypeName();
+        String memorySize = computerType.getMemorySize();
+        String diskSize = computerType.getDiskSize();
+        String operatingSystem = computerType.getOperatingSystem();
 
         if(computerTypeName.length()==0){
             //判断电脑类型是否为空
@@ -148,13 +143,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                System.out.println(computerTypeName+" "+memorySize+" "+coid+" "+diskSize+" "+operatingSystem);
-                ComputerType computerType = new ComputerType();
-                computerType.setComputerTypeId(coid);
-                computerType.setComputerTypeName(computerTypeName);
-                computerType.setMemorySize(memorySize);
-                computerType.setDiskSize(diskSize);
-                computerType.setOperatingSystem(operatingSystem);
                 computerTypeService.updateComputerType(computerType);
                 //修改成功
                 jsonData.put("judge","0");
@@ -169,12 +157,15 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "添加树莓派类型", notes = "添加树莓派类型notes", produces = "application/json")
     @RequestMapping(value="/raspberryType/", method=RequestMethod.POST)
-    public String postRaspberryType(@RequestParam(value="raspberryTypeName")String raspberryTypeName) {
+    @ResponseBody
+    public String postRaspberryType(@RequestBody RaspberryType raspberryType) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String raspberryTypeName = raspberryType.getRaspberryTypeName();
 
         if(raspberryTypeName.length()==0){
             //判断树莓派类型是否为空
@@ -184,8 +175,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                RaspberryType raspberryType = new RaspberryType();
-                raspberryType.setRaspberryTypeName(raspberryTypeName);
                 raspberryTypeService.addRaspberryType(raspberryType);
                 //添加成功
                 jsonData.put("judge","0");
@@ -221,12 +210,15 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "根据id修改树莓派类型", notes = "根据id修改树莓派类型notes", produces = "application/json")
     @RequestMapping(value="/raspberryType/{raid}", method=RequestMethod.PUT)
+    @ResponseBody
     public String putRaspberryType(@PathVariable("raid") int raid,
-                                   @RequestParam(value="raspberryTypeName")String raspberryTypeName) {
+                                   @RequestBody RaspberryType raspberryType) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String raspberryTypeName = raspberryType.getRaspberryTypeName();
 
         if(raspberryTypeName.length()==0){
             //判断树莓派类型是否为空
@@ -236,9 +228,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                RaspberryType raspberryType = new RaspberryType();
-                raspberryType.setRaspberryTypeId(raid);
-                raspberryType.setRaspberryTypeName(raspberryTypeName);
                 raspberryTypeService.updateRaspberryType(raspberryType);
                 //修改成功
                 jsonData.put("judge","0");
@@ -253,12 +242,15 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "添加单片机类型", notes = "添加单片机类型notes", produces = "application/json")
     @RequestMapping(value="/singleChipType/", method=RequestMethod.POST)
-    public String postSingleChipType(@RequestParam(value = "singlechipTypeName")String singlechipTypeName) {
+    @ResponseBody
+    public String postSingleChipType(@RequestBody SinglechipType singlechipType) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String singlechipTypeName = singlechipType.getSinglechipTypeName();
 
         if(singlechipTypeName.length()==0){
             //判断单片机类型是否为空
@@ -268,8 +260,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                SinglechipType singlechipType = new SinglechipType();
-                singlechipType.setSinglechipTypeName(singlechipTypeName);
                 singlechipTypeService.addSinglechipType(singlechipType);
                 //添加成功
                 jsonData.put("judge","0");
@@ -337,12 +327,15 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "添加摄像头类型", notes = "添加摄像头类型notes", produces = "application/json")
     @RequestMapping(value="/cameraType/", method=RequestMethod.POST)
-    public String postCameraTypeType(@RequestParam(value ="cameraTypeName")String cameraTypeName) {
+    @ResponseBody
+    public String postCameraTypeType(@RequestBody CameraType cameraType) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String cameraTypeName = cameraType.getCameraTypeName();
 
         if(cameraTypeName.length()==0){
             //判断摄像头类型是否为空
@@ -352,8 +345,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                CameraType cameraType = new CameraType();
-                cameraType.setCameraTypeName(cameraTypeName);
                 cameraTypeService.addCameraType(cameraType);
                 //添加成功
                 jsonData.put("judge","0");
@@ -389,12 +380,15 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "根据id修改摄像头类型", notes = "根据id修改摄像头类型notes", produces = "application/json")
     @RequestMapping(value="/cameraType/{cid}", method=RequestMethod.PUT)
+    @ResponseBody
     public String putCameraTypeTyp(@PathVariable("cid") int cid,
-                                   @RequestParam(value ="cameraTypeName")String cameraTypeName) {
+                                   @RequestBody CameraType cameraType) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String cameraTypeName = cameraType.getCameraTypeName();
 
         if(cameraTypeName.length()==0){
             //判断摄像头类型是否为空
@@ -404,9 +398,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                CameraType cameraType = new CameraType();
-                cameraType.setCameraTypeName(cameraTypeName);
-                cameraType.setCameraTypeId(cid);
                 cameraTypeService.updateCameraType(cameraType);
                 //修改成功
                 jsonData.put("judge","0");
@@ -421,12 +412,15 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "添加投影仪类型", notes = "添加投影仪类型notes", produces = "application/json")
     @RequestMapping(value="/projectorType/", method=RequestMethod.POST)
-    public String postProjectorType(@RequestParam(value ="projectorTypeName")String projectorTypeName) {
+    @ResponseBody
+    public String postProjectorType(@RequestBody ProjectorType projectorType) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String projectorTypeName = projectorType.getProjectorTypeName();
 
         if(projectorTypeName.length()==0){
             //判断投影仪类型是否为空
@@ -436,8 +430,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                ProjectorType projectorType = new ProjectorType();
-                projectorType.setProjectorTypeName(projectorTypeName);
                 projectorTypeService.addProjectorType(projectorType);
                 //添加成功
                 jsonData.put("judge","0");
@@ -473,12 +465,15 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "根据id修改单片机类型", notes = "根据id修改单片机类型notes", produces = "application/json")
     @RequestMapping(value="/projectorType/{pid}", method=RequestMethod.PUT)
+    @ResponseBody
     public String putProjectorType(@PathVariable("pid") int pid,
-                                   @RequestParam(value ="projectorTypeName")String projectorTypeName) {
+                                   @RequestBody ProjectorType projectorType) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String projectorTypeName = projectorType.getProjectorTypeName();
 
         if(projectorTypeName.length()==0){
             //判断投影仪类型是否为空
@@ -488,9 +483,6 @@ public class DeviceInfoController {
             jsonData.put("judge","-5");
         }else{
             try{
-                ProjectorType projectorType = new ProjectorType();
-                projectorType.setProjectorTypeName(projectorTypeName);
-                projectorType.setProjectorTypeId(pid);
                 projectorTypeService.updateProjectorType(projectorType);
                 //修改成功
                 jsonData.put("judge","0");

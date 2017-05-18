@@ -43,25 +43,18 @@ public class RoleController {
 
     @ApiOperation(value = "添加角色", notes = "添加角色notes", produces = "application/json")
     @RequestMapping(value="/", method=RequestMethod.POST)
-    public String postRole(@RequestParam(value="r_name")String r_name,
-                           @RequestParam(value="p_ids")List<Integer> p_ids) {
+    @ResponseBody
+    public String postRole(@RequestBody Role role) {
         // 处理"/roles/"的POST请求，用来创建Role
         // 除了@ModelAttribute绑定参数之外，还可以通过@RequestParam从页面中传递参数
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
-        for (int i = 0;i < p_ids.size();i++){
-            System.out.println(p_ids.get(i));
-        }
-        if(r_name.length()==0){
+        if(role.getR_name().length()==0){
             jsonData.put("judge","-1");
         }else{
             try{
-                Role role = new Role();
-                role.setR_name(r_name);
-                role.setP_ids(p_ids);
-
                 roleService.addRole(role);
                 //添加成功
                 jsonData.put("judge","0");
@@ -97,25 +90,19 @@ public class RoleController {
 
     @ApiOperation(value = "根据id修改角色", notes = "根据id修改角色notes", produces = "application/json")
     @RequestMapping(value="/{rid}", method=RequestMethod.PUT)
+    @ResponseBody
     public String putRole(@PathVariable("rid") int rid,
-                          @RequestParam(value="r_name")String r_name,
-                          @RequestParam(value="p_ids")List<Integer> p_ids) {
+                          @RequestBody Role role) {
         // 处理"/roles/{id}"的PUT请求，用来更新Role信息
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(r_name.length()==0){
+        if(role.getR_name().length()==0){
             jsonData.put("judge","-1");
         }else{
             try{
-                System.out.println(r_name+" "+p_ids+" "+rid);
-                Role role = new Role();
-                role.setR_id(rid);
-                role.setR_name(r_name);
-                role.setP_ids(p_ids);
-
                 roleService.updateRole(role);
                 //修改成功
                 jsonData.put("judge","0");
@@ -165,7 +152,7 @@ public class RoleController {
         JSONObject jsonData = new JSONObject();
 
         List<Permission> permissionList = permissionService.getAllPermission();
-        jsonData.put("permissionlist",permissionList);
+        jsonData.put("permissionList",permissionList);
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();

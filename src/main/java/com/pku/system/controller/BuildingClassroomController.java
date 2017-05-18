@@ -33,14 +33,21 @@ public class BuildingClassroomController {
         JSONArray jsonArray = new JSONArray();
         JSONObject jsonData = new JSONObject();
 
-        List<Building> buildingList= buildingService.getAllBuilding();
+        List<Classroom> classroomList = classroomService.getAllClassroom();
+        //List<Building> buildingList= buildingService.getAllBuilding();
 
-        for(int i = 0;i < buildingList.size();i++){
-            System.out.println(buildingList.get(i).getId());
-            List<Classroom> classroomList = classroomService.selectByBuildingId(buildingList.get(i).getId());
-            buildingList.get(i).setClassroomList(classroomList);
+//        for(int i = 0;i < buildingList.size();i++){
+//            System.out.println(buildingList.get(i).getId());
+//            List<Classroom> classroomListB = classroomService.selectByBuildingId(buildingList.get(i).getId());
+//            buildingList.get(i).setClassroomList(classroomListB);
+//        }
 
-            jsonArray.add(buildingList.get(i));
+        for(int i = 0;i < classroomList.size();i++){
+            System.out.println(classroomList.get(i).getB_id());
+            Building building = buildingService.selectById(classroomList.get(i).getB_id());
+            classroomList.get(i).setBuilding(building);
+
+            jsonArray.add(classroomList.get(i));
             jsonData.put("buildingClassroomList",jsonArray);
         }
 
@@ -50,27 +57,24 @@ public class BuildingClassroomController {
 
     @ApiOperation(value = "添加教学楼教室信息", notes = "添加教学楼教室信息notes", produces = "application/json")
     @RequestMapping(value="/", method=RequestMethod.POST)
-    public String postBuildingClassroom(@RequestParam(value="buildingNum")String buildingNum,
-                                        @RequestParam(value="classroomNum")List<String> classroomNums) {
+    @ResponseBody
+    public String postBuildingClassroom(@RequestBody Building building) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(buildingNum.length()==0){
+        if(building.getBuildingNum().length()==0){
             //判断教学楼是否为空
             jsonData.put("judge","-1");
-        }else if(classroomNums.size()==0){
+        }else if(building.getClassroomList().size()==0){
             //判断教室是否为空
             jsonData.put("judge","-2");
         }
-        if(buildingService.selectByName(buildingNum) == null){
+        if(buildingService.selectByName(building.getBuildingNum()) == null){
             //判断教学楼是否存在，不存在则新增
             try{
-                Building building = new Building();
-                building.setBuildingNum(buildingNum);
-
                 buildingService.addBuilding(building);
                 //添加成功
                 jsonData.put("judge","0");
@@ -79,17 +83,17 @@ public class BuildingClassroomController {
                 jsonData.put("judge","-9");
             }
         }
-        if(buildingService.selectByName(buildingNum) != null){
+        if(buildingService.selectByName(building.getBuildingNum()) != null){
             //判断教学楼是否存在，存在则新增教室
-            for(int i=0;i<classroomNums.size();i++){
-                if(classroomService.selectByName(classroomNums.get(i))!=null){
+            for(int i=0;i<building.getClassroomList().size();i++){
+                if(classroomService.selectByName(building.getClassroomList().get(i).getClassroomNum())!=null){
                     jsonData.put("judge","-4");
                 }else{
                     try{
-                        Building buildingC = buildingService.selectByName(buildingNum);
+                        Building buildingC = buildingService.selectByName(building.getBuildingNum());
 
                         Classroom classroom = new Classroom();
-                        classroom.setClassroomNum(classroomNums.get(i));
+                        classroom.setClassroomNum(building.getClassroomList().get(i).getClassroomNum());
                         classroom.setB_id(buildingC.getId());
 
                         classroomService.addClassroom(classroom);
@@ -133,31 +137,31 @@ public class BuildingClassroomController {
 
     @ApiOperation(value = "根据id修改教学楼教室信息", notes = "根据id修改教学楼教室信息notes", produces = "application/json")
     @RequestMapping(value="/{cid}", method=RequestMethod.PUT)
+    @ResponseBody
     public String putUser(@PathVariable("cid") int cid,
-                          @RequestParam(value="buildingNum")String buildingNum,
-                          @RequestParam(value="classroomNum")String classroomNum) {
+                          @RequestBody Classroom classroom) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(buildingNum.length()==0){
+        if(classroom.getBuilding().getBuildingNum().length()==0){
             //判断教学楼是否为空
             jsonData.put("judge","-1");
-        }else if(classroomNum.length()==0){
+        }else if(classroom.getClassroomNum().length()==0){
             //判断教室是否为空
             jsonData.put("judge","-2");
-        }else if(buildingService.selectByName(buildingNum)!=null&&classroomService.selectByName(classroomNum)!=null){
+        }else if(buildingService.selectByName(classroom.getBuilding().getBuildingNum())!=null&&classroomService.selectByName(classroom.getClassroomNum())!=null){
             //教学楼教室已存在
             jsonData.put("judge","-3");
         }else{
             try{
-                Classroom classroom = classroomService.selectById(cid);
+                Classroom classroomOld = classroomService.selectById(cid);
 
-                classroom.setClassroomNum(classroomNum);
+                classroomOld.setClassroomNum(classroom.getClassroomNum());
 
                 Building building = buildingService.selectById(classroom.getB_id());
-                building.setBuildingNum(buildingNum);
+                building.setBuildingNum(classroom.getBuilding().getBuildingNum());
 
                 buildingService.updateBuilding(building);
                 classroomService.updateClassroom(classroom);

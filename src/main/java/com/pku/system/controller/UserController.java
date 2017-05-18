@@ -45,9 +45,8 @@ public class UserController {
 
     @ApiOperation(value = "添加用户", notes = "添加用户notes", produces = "application/json")
     @RequestMapping(value="/", method=RequestMethod.POST)
-    public String postUser(@RequestParam(value="username")String username,
-                           @RequestParam(value="password")String password,
-                           @RequestParam(value="r_id")int r_id) {
+    @ResponseBody
+    public String postUser(@RequestBody User user) {
         // 处理"/users/"的POST请求，用来创建User
         // 除了@ModelAttribute绑定参数之外，还可以通过@RequestParam从页面中传递参数
         JSONObject jsonObject = new JSONObject();
@@ -55,22 +54,17 @@ public class UserController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(username.length()==0){
+        if(user.getUsername().length()==0){
             //判断用户名是否为空
             jsonData.put("judge","-1");
-        }else if(password.length()==0){
+        }else if(user.getPassword().length()==0){
             //判断密码是否为空
             jsonData.put("judge","-2");
-        }else if(userService.selectByName(username)!=null){
+        }else if(userService.selectByName(user.getUsername())!=null){
             //判断用户名是否存在
             jsonData.put("judge","-3");
         }else{
             try{
-                User user = new User();
-                user.setUsername(username);
-                user.setPassword(password);
-                user.setR_id(r_id);
-
                 userService.addUser(user);
                 //添加成功
                 jsonData.put("judge","0");
@@ -106,10 +100,9 @@ public class UserController {
 
     @ApiOperation(value = "根据id修改用户", notes = "根据id修改用户notes", produces = "application/json")
     @RequestMapping(value="/{uid}", method=RequestMethod.PUT)
+    @ResponseBody
     public String putUser(@PathVariable("uid") int uid,
-                          @RequestParam(value="username")String username,
-                          @RequestParam(value="password")String password,
-                          @RequestParam(value="r_id")int r_id,
+                          @RequestBody User user,
                           @RequestParam(value="judge")boolean judge) {//判断username有无变更 默认为变了
         // 处理"/users/{id}"的PUT请求，用来更新User信息
         JSONObject jsonObject = new JSONObject();
@@ -117,19 +110,14 @@ public class UserController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(username.length()==0){
+        if(user.getUsername().length()==0){
             //判断用户名是否为空
             jsonData.put("judge","-1");
-        }else if(userService.selectByName(username)!=null&&judge){
+        }else if(userService.selectByName(user.getUsername())!=null&&judge){
             //判断用户名是否存在
             jsonData.put("judge","-2");
         }else{
             try{
-                System.out.println(username+" "+password+" "+uid+" "+r_id);
-                User user = new User();
-                user.setUsername(username);
-                user.setPassword(password);
-                user.setR_id(r_id);
                 userService.updateUser(user);
                 //修改成功
                 jsonData.put("judge","0");

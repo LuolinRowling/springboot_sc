@@ -21,18 +21,15 @@ public class LoginController {
     @Autowired
     UserService userService;
 
-    /**
-     * 登录
-     * @param user
-     * @param request
-     * @return
-     */
     @ApiOperation(value = "注册", notes = "注册notes", produces = "application/json")
-    @RequestMapping(value="/login",method = RequestMethod.POST,consumes = "application/json")
-    @ResponseBody
-    public String login(@RequestBody User user, HttpServletRequest request){
+    @RequestMapping(value="/login",method = RequestMethod.GET,consumes = "application/json")
+    public String login(@RequestParam("username") String username,
+                        @RequestParam("password") String password,
+                        HttpServletRequest request){
         //调用login方法来验证是否是注册用户
-        boolean loginType = userService.login(user.getUsername(),user.getPassword());
+        boolean loginType = userService.login(username,password);
+
+        User user = userService.selectByName(username);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
