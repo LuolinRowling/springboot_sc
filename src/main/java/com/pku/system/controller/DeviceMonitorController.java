@@ -7,6 +7,7 @@ import com.pku.system.service.CameraService;
 import com.pku.system.service.DeviceInfoService;
 import com.pku.system.util.Constant;
 import com.pku.system.util.DealMessage;
+import com.pku.system.util.Time;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONArray;
@@ -16,7 +17,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Api(value="远程设备管理",tags = {"远程设备管理API"},description = "描述信息")
 @RestController
@@ -29,6 +32,8 @@ public class DeviceMonitorController {
     CameraService cameraService;
 
     WSocketMessage wSocketMessage = new WSocketMessage();
+    Time time = new Time();
+
     DeviceInfo deviceInfo;
     Camera camera;
     List<DeviceInfo> deviceInfoList;
@@ -36,6 +41,7 @@ public class DeviceMonitorController {
 
     public static List<WSocketMessage> messageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> messageListCenter = new ArrayList<WSocketMessage>();
+    public static Map<String,String> messageMap = new HashMap<String,String>();
 
     @ApiOperation(value = "获得设备管理列表", notes = "获得设备管理列表notes", produces = "application/json")
     @RequestMapping(value="/", method= RequestMethod.GET)
@@ -73,34 +79,41 @@ public class DeviceMonitorController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        try{
-            System.out.println(dmid+" "+device);
-            deviceInfo = deviceInfoService.selectById(dmid);
+        System.out.println(dmid+" "+device);
+        deviceInfo = deviceInfoService.selectById(dmid);
 
-            NewWebSocket nbs = new NewWebSocket();
+        NewWebSocket nbs = new NewWebSocket();
 
-            String orderOpen = Constant.OPEN+"_"+device;
-            String orderClose = Constant.CLOSE+"_"+device;
+        String orderOpen = Constant.OPEN+"_"+device;
+        String orderClose = Constant.CLOSE+"_"+device;
 
-            if(device.length()!=0 && !device.equals("camera")){//操作单个设备，不包含摄像头
-                nbs.sendDeviceMessageToOne(deviceInfo.getRaspberryCode(),
-                        operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
-            }else{
-                //根据前端返回的信息，判断是开启全部，还是关闭全部
-                nbs.sendDeviceMessageToOne(deviceInfo.getRaspberryCode(),
-                        operation.equals("open")?Constant.OPENALL:Constant.CLOSEALL);
-            }
+        String id = time.getCurrentTime();
 
-            dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
-
-            //修改成功
-            jsonData.put("judge","0");
-        }catch (DataAccessException e){
-            //修改失败
-            jsonData.put("judge","-9");
+        if(device.length()!=0 && !device.equals("camera")){//操作单个设备，不包含摄像头
+            nbs.sendDeviceMessageToOne(id,deviceInfo.getRaspberryCode(),
+                    operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
+        }else{
+            //根据前端返回的信息，判断是开启全部，还是关闭全部
+            nbs.sendDeviceMessageToOne(id,deviceInfo.getRaspberryCode(),
+                    operation.equals("open")?Constant.OPENALL:Constant.CLOSEALL);
         }
-        jsonObject.put("data",jsonData);
-        return jsonObject.toString();
+
+        //dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
+        while(true){
+            if(messageMap.get(id)==null){
+                continue;
+            }else{
+                deviceInfo.setRaspberryStatus(3);//并将树莓派状态置为在线
+                deviceInfo.setRaspberryStreamStatus(3);//在线，空闲
+
+                deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+
+                jsonData.put("deviceInfo",deviceInfo);
+                jsonObject.put("data",jsonData);
+                return jsonObject.toString();
+            }
+        }
+
     }
 
     @ApiOperation(value = "根据id发送修改单个教室摄像头状态消息", notes = "根据id发送修改单个教室摄像头状态消息notes", produces = "application/json")
@@ -123,10 +136,12 @@ public class DeviceMonitorController {
 
             NewWebSocket nbs = new NewWebSocket();
 
+            String id = time.getCurrentTime();
+
             String orderOpen = Constant.OPEN+"_camera_"+code;
             String orderClose = Constant.CLOSE+"_camera_"+code;
 
-            nbs.sendDeviceMessageToOne(deviceInfo.getRaspberryCode(),
+            nbs.sendDeviceMessageToOne(id,deviceInfo.getRaspberryCode(),
                 operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
 
             dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
@@ -155,8 +170,10 @@ public class DeviceMonitorController {
 
             deviceInfoList = deviceInfoService.getAllDeviceInfoStatus();
 
+            String id = time.getCurrentTime();
+
             for(int i=0;i<deviceInfoList.size();i++){
-                nbs.sendDeviceMessageToOne(deviceInfoList.get(i).getRaspberryCode(),
+                nbs.sendDeviceMessageToOne(id,deviceInfoList.get(i).getRaspberryCode(),
                         operation.equals("open")?Constant.OPENALL:Constant.CLOSEALL);
                 //System.out.println("test");
                 dealMessage.addMessageList(deviceInfoList.get(i).getRaspberryCode(),deviceInfoList.get(i).getBuildingNum()+deviceInfoList.get(i).getClassroomNum(),messageList,deviceInfoList.get(i),messageListCenter);

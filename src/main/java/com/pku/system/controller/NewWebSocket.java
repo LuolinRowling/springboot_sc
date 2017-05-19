@@ -14,6 +14,8 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,13 +33,9 @@ public class NewWebSocket {
 
     public static List<WSocketMessage> wSocketMessageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> wSocketMessageListCenter = new ArrayList<WSocketMessage>();
+    public static Map<String,String> messageMap = new HashMap<String,String>();
+
     Map<String, String> dic = new HashMap<String, String>(){{ put("camera", "摄像头"); put("computer", "电脑");put("projector", "投影仪"); }};
-
-    @Autowired
-    DeviceInfoService deviceInfoService;
-
-    @Autowired
-    CameraService cameraService;
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     // 若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
@@ -106,13 +104,14 @@ public class NewWebSocket {
      * @param session 可选的参数
      */
     @OnMessage
-    public void onMessage(@PathParam("ownId") String ownId,String message, Session session) {
+    public void onMessage(@PathParam("ownId") String ownId, String message, Session session) {
         System.out.println("来自客户端的消息:" + ownId+" "+message);
 
         //解析message，存入列表中
         ParseData data = new ParseData();
         String parseMsg = data.parsrJson(message);
 
+        String sid = data.sid;
         String msg = data.smessage;
         String[] msgp = msg.split("_");//字符串截取
 
@@ -155,7 +154,8 @@ public class NewWebSocket {
 //        for(Camera camera:cameraList){
 //            cameraService.updateCamera(camera);
 //        }
-        sendDeviceMessageToOne(ownId,"receive");
+        DeviceMonitorController.messageMap.put(sid,sid);
+        sendDeviceMessageToOne("lalala",ownId,"receive");
     }
 
     /**
@@ -188,7 +188,7 @@ public class NewWebSocket {
      * 广播消息
      * @param message 客户端发送过来的消息
      */
-    public void sendMessageToAll(String message){
+    public void sendMessageToAll(String id,String message){
         Collection<HashMap<String, NewWebSocket>> hashMapCollection = webSocketHashMap.values();
         Iterator ite = hashMapCollection.iterator();
         while(ite.hasNext()) {
@@ -200,6 +200,7 @@ public class NewWebSocket {
                             "  \"code\": 0,\n" +
                             "  \"msg\": \"success\",\n" +
                             "  \"data\": {\n" +
+                            "    \"id\":" + id+ ",\n" +
                             "    \"message\":\"" + message + "\"\n" +
                             "  }\n" +
                             "}");
@@ -216,13 +217,14 @@ public class NewWebSocket {
      * @param ownId 客户端编号
      * @param message 客户端发送过来的消息
      */
-    public void sendDeviceMessageToOne(String ownId,String message){
+    public void sendDeviceMessageToOne(String id,String ownId,String message){
         for (Map.Entry<String, NewWebSocket> item : getUserWebSocket(ownId).entrySet()) {
             try {
                 item.getValue().sendMessage("{\n" +
                         "  \"code\": 0,\n" +
                         "  \"msg\": \"success\",\n" +
                         "  \"data\": {\n" +
+                        "    \"id\":" + id+ ",\n" +
                         "    \"ownId\":" + ownId + ",\n" +
                         "    \"message\":\"" + message + "\"\n" +
                         "  }\n" +
@@ -240,13 +242,14 @@ public class NewWebSocket {
      * @param ownId 客户端编号
      * @param message 客户端发送过来的消息
      */
-    public void sendMessageToOne(String ownId,String address,String message){
+    public void sendMessageToOne(String id, String ownId,String address,String message){
         for (Map.Entry<String, NewWebSocket> item : getUserWebSocket(ownId).entrySet()) {
             try {
                 item.getValue().sendMessage("{\n" +
                         "  \"code\": 0,\n" +
                         "  \"msg\": \"success\",\n" +
                         "  \"data\": {\n" +
+                        "    \"id\":" + id+ ",\n" +
                         "    \"address\":\"" + address + "\",\n" +
                         "    \"message\":\"" + message + "\"\n" +
                         "  }\n" +
