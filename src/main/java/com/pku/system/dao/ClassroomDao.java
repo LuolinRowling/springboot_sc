@@ -16,11 +16,9 @@ public interface ClassroomDao {
     @Select("select * from classroom where b_id = #{b_id}")
     public List<Classroom> selectByBuildingId(int bid);
 
-    @Select("SELECT" +
-            "c.id," +
-            "c.classroomNum," +
-            "b.id," +
-            "b.buildingNum" +
+    @Select("SELECT " +
+            "c.*," +
+            "b.* " +
             "FROM classroom c INNER JOIN building b ON c.b_id=b.id")
     public List<Classroom> getAllClassroom();
 

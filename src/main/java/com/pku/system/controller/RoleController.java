@@ -53,6 +53,8 @@ public class RoleController {
         JSONObject jsonData = new JSONObject();
         if(role.getR_name().length()==0){
             jsonData.put("judge","-1");
+        }else if(roleService.selectByRoleName(role.getR_name())!=null){
+            jsonData.put("judge","-2");
         }else{
             try{
                 roleService.addRole(role);
@@ -92,7 +94,8 @@ public class RoleController {
     @RequestMapping(value="/{rid}", method=RequestMethod.PUT)
     @ResponseBody
     public String putRole(@PathVariable("rid") int rid,
-                          @RequestBody Role role) {
+                          @RequestBody Role role,
+                          @RequestParam(value="judge")boolean judge) {
         // 处理"/roles/{id}"的PUT请求，用来更新Role信息
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
@@ -101,9 +104,16 @@ public class RoleController {
 
         if(role.getR_name().length()==0){
             jsonData.put("judge","-1");
+        }else if(roleService.selectByRoleName(role.getR_name())!=null&&judge){
+            //判断用户名是否存在
+            jsonData.put("judge","-2");
         }else{
             try{
-                roleService.updateRole(role);
+                Role roleOld = roleService.selectById(rid);
+                roleOld.setR_name(role.getR_name());
+                roleOld.setP_ids(role.getP_ids());
+
+                roleService.updateRole(roleOld);
                 //修改成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){
