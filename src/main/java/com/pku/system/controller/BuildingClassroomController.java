@@ -87,7 +87,7 @@ public class BuildingClassroomController {
             //判断教学楼是否存在，存在则新增教室
             for(int i=0;i<building.getClassroomList().size();i++){
                 if(classroomService.selectByName(building.getClassroomList().get(i).getClassroomNum())!=null){
-                    jsonData.put("judge","-4");
+                    jsonData.put("judge","-3");
                 }else{
                     try{
                         Building buildingC = buildingService.selectByName(building.getBuildingNum());

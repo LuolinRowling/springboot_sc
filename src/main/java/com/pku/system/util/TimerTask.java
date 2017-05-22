@@ -20,6 +20,7 @@ public class TimerTask {
     DeviceInfoService deviceInfoService;
     List<DeviceInfo> deviceInfoList;
     DealMessage dealMessage = new DealMessage();
+    Time time = new Time();
 
     public static List<WSocketMessage> messageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> messageListCenter = new ArrayList<WSocketMessage>();
@@ -40,8 +41,10 @@ public class TimerTask {
     @Scheduled(cron = "0 0 */8 * * ?")
     public void detect()
     {
+        String id = time.getCurrentTime();
         NewWebSocket nbs = new NewWebSocket();
-        nbs.sendMessageToAll(Constant.DETECTONLINE);//广播
+
+        nbs.sendMessageToAll(id,Constant.DETECTONLINE);//广播
 
         deviceInfoList = deviceInfoService.getAllDeviceInfoStatus();
 

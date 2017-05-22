@@ -9,6 +9,7 @@ import com.pku.system.service.DeviceInfoService;
 import com.pku.system.service.PullInfoService;
 import com.pku.system.util.Constant;
 import com.pku.system.util.DealMessage;
+import com.pku.system.util.Time;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONArray;
@@ -36,6 +37,7 @@ public class VideoController {
     DeviceInfo deviceInfo = new DeviceInfo();
     DeviceInfo deviceInfoPull = new DeviceInfo();
     DealMessage dealMessage = new DealMessage();
+    Time time = new Time();
 
     public static List<WSocketMessage> messageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> messageListCenter = new ArrayList<WSocketMessage>();
@@ -71,6 +73,8 @@ public class VideoController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
+        String id = time.getCurrentTime();
+
         try{
             System.out.println(did+" "+operation);
             deviceInfo = deviceInfoService.selectById(did);
@@ -83,16 +87,16 @@ public class VideoController {
             if(operation.contains("push")){
                 //nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.PUSHHEADER+deviceInfo.getRaspberryCode()+Constant.PUSHFOOTER,
                 //operation.equals("start_push")?Constant.STARTPUSH:Constant.STOPTPUSH);
-                nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
+                nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
                         operation.equals("start_push")?Constant.STARTPUSH:Constant.STOPTPUSH);
             }else if(operation.contains("pull")) {//停止拉流
                 Thread.sleep(6 * 1000);//睡眠3s
 
-                nbs.sendMessageToOne(deviceInfo.getRaspberryCode(), "serverAddress", Constant.STOPTPULL);
+                nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(), "serverAddress", Constant.STOPTPULL);
             }else{//广播，实则为一个教室推流，其余教室拉流
                 //nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.PUSHHEADER+deviceInfo.getRaspberryCode()+Constant.PUSHFOOTER,
                 //operation.equals("start_broadcast")?Constant.STARTPUSHBROADCAST:Constant.STOPTPUSHBROADCAST);//选择广播的教室推流
-                nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
+                nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
                         operation.equals("start_broadcast")?Constant.STARTPUSHBROADCAST:Constant.STOPTPUSHBROADCAST);//选择广播的教室推流
 
                 //是否需要睡眠时间，需要和安卓组商量
@@ -101,7 +105,7 @@ public class VideoController {
                 for(int i=0;i<deviceInfoStreamList.size();i++){
                     //nbs.sendMessageToOne(deviceInfoStreamList.get(i).getRaspberryCode(),Constant.PULLHEADER+deviceInfo.getRaspberryCode()+Constant.PULLFOOTER,
                     //operation.equals("start_broadcast")?Constant.STARTPULL:Constant.STOPTPULL);//其余教室拉流
-                    nbs.sendMessageToOne(deviceInfoStreamList.get(i).getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
+                    nbs.sendMessageToOne(id,deviceInfoStreamList.get(i).getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
                             operation.equals("start_broadcast")?Constant.STARTPULL:Constant.STOPTPULL);//其余教室拉流
 
                     PullInfo pullInfoOld = pullInfoService.selectById(deviceInfoStreamList.get(i).getId());
@@ -198,6 +202,8 @@ public class VideoController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
+        String id = time.getCurrentTime();
+
         //修改成功
         jsonData.put("judge","0");
         try{
@@ -212,7 +218,7 @@ public class VideoController {
             Thread.sleep(6*1000);//睡眠3s
             //nbs.sendMessageToOne(deviceInfoPull.getRaspberryCode(),Constant.PULLHEADER+deviceInfoPush.getRaspberryCode()+Constant.PULLFOOTER,Constant.STARTPULL);
 
-            nbs.sendMessageToOne(deviceInfoPull.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfoPush.getRaspberryCode(),Constant.STARTPULL);
+            nbs.sendMessageToOne(id,deviceInfoPull.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfoPush.getRaspberryCode(),Constant.STARTPULL);
 
             PullInfo pullInfoOld = pullInfoService.selectById(did);
             if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
@@ -283,6 +289,8 @@ public class VideoController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
+        String id = time.getCurrentTime();
+
         //修改成功
         jsonData.put("judge","0");
         System.out.println(pullList.toString()+" "+buildingNum+" "+classroomNum);
@@ -299,7 +307,7 @@ public class VideoController {
             try {
                 Thread.sleep(6*1000);//睡眠3s
                 //nbs.sendMessageToOne(deviceInfoPull.getRaspberryCode(),Constant.PULLHEADER+deviceInfoPush.getRaspberryCode()+Constant.PULLFOOTER,Constant.STARTPULL);
-                nbs.sendMessageToOne(deviceInfoPull.getRaspberryCode(), Constant.STREAMADDRESS+deviceInfoPush.getRaspberryCode(),Constant.STARTPULL);
+                nbs.sendMessageToOne(id,deviceInfoPull.getRaspberryCode(), Constant.STREAMADDRESS+deviceInfoPush.getRaspberryCode(),Constant.STARTPULL);
 
                 PullInfo pullInfoOld = pullInfoService.selectById(deviceInfoPull.getId());
                 if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
@@ -368,13 +376,15 @@ public class VideoController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
+        String id = time.getCurrentTime();
+
         System.out.println(did+" "+code+" "+direction);
 
         NewWebSocket nbs = new NewWebSocket();
 
         deviceInfo = deviceInfoService.selectById(did);
 
-        nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),"", direction+"_"+code);
+        nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(),"", direction+"_"+code);
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();

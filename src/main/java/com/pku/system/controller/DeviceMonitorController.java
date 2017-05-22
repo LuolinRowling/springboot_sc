@@ -90,6 +90,7 @@ public class DeviceMonitorController {
         String id = time.getCurrentTime();
 
         if(device.length()!=0 && !device.equals("camera")){//操作单个设备，不包含摄像头
+            System.out.println(id);
             nbs.sendDeviceMessageToOne(id,deviceInfo.getRaspberryCode(),
                     operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
         }else{
@@ -101,6 +102,7 @@ public class DeviceMonitorController {
         //dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
         while(true){
             if(messageMap.get(id)==null){
+                //System.out.println(id);
                 continue;
             }else{
                 deviceInfo.setRaspberryStatus(3);//并将树莓派状态置为在线
