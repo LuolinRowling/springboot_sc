@@ -34,8 +34,8 @@ public class BuildingClassroomController {
         JSONObject jsonData = new JSONObject();
 
         List<Classroom> classroomList = classroomService.getAllClassroom();
-        //List<Building> buildingList= buildingService.getAllBuilding();
-
+//        List<Building> buildingList= buildingService.getAllBuilding();
+//
 //        for(int i = 0;i < buildingList.size();i++){
 //            System.out.println(buildingList.get(i).getId());
 //            List<Classroom> classroomListB = classroomService.selectByBuildingId(buildingList.get(i).getId());
@@ -50,6 +50,22 @@ public class BuildingClassroomController {
             jsonArray.add(classroomList.get(i));
             jsonData.put("buildingClassroomList",jsonArray);
         }
+
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
+    }
+
+    @ApiOperation(value = "获得教学楼信息列表", notes = "获得教学楼信息列表notes", produces = "application/json")
+    @RequestMapping(value="/buildings", method= RequestMethod.GET)
+    public String getAllBuilding(){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg","调用成功");
+        jsonObject.put("code","0000");
+        JSONObject jsonData = new JSONObject();
+
+        List<Building> buildingList= buildingService.getAllBuilding();
+
+        jsonData.put("buildingList",buildingList);
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();
@@ -82,8 +98,7 @@ public class BuildingClassroomController {
                 //添加失败
                 jsonData.put("judge","-9");
             }
-        }
-        if(buildingService.selectByName(building.getBuildingNum()) != null){
+        }else{
             //判断教学楼是否存在，存在则新增教室
             for(int i=0;i<building.getClassroomList().size();i++){
                 if(classroomService.selectByName(building.getClassroomList().get(i).getClassroomNum())!=null){
@@ -113,7 +128,7 @@ public class BuildingClassroomController {
 
     @ApiOperation(value = "根据id查询教学楼教室信息", notes = "根据id查询教学楼教室信息notes", produces = "application/json")
     @RequestMapping(value="/{cid}", method=RequestMethod.GET)
-    public String getUser(@PathVariable("cid") int cid) {
+    public String getBuildingClassroom(@PathVariable("cid") int cid) {
         // 处理"/users/{id}"的GET请求，用来获取url中id值的User信息
         // url中的id可通过@PathVariable绑定到函数的参数中
         JSONObject jsonObject = new JSONObject();
@@ -136,10 +151,42 @@ public class BuildingClassroomController {
     }
 
     @ApiOperation(value = "根据id修改教学楼教室信息", notes = "根据id修改教学楼教室信息notes", produces = "application/json")
+    @RequestMapping(value="/buildings/{bid}", method=RequestMethod.PUT)
+    @ResponseBody
+    public String putBuilding(@PathVariable("bid") int bid,
+                              @RequestBody Building building) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg","调用成功");
+        jsonObject.put("code","0000");
+        JSONObject jsonData = new JSONObject();
+
+        if(building.getBuildingNum()==null){
+            //判断教学楼是否为空
+            jsonData.put("judge","-1");
+        }else{
+            try{
+                Building buildingOld = buildingService.selectById(bid);
+
+                buildingOld.setBuildingNum(building.getBuildingNum());
+
+                buildingService.updateBuilding(buildingOld);
+
+                //修改成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
+            }
+        }
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
+    }
+
+    @ApiOperation(value = "根据id修改教学楼教室信息", notes = "根据id修改教学楼教室信息notes", produces = "application/json")
     @RequestMapping(value="/{cid}", method=RequestMethod.PUT)
     @ResponseBody
-    public String putUser(@PathVariable("cid") int cid,
-                          @RequestBody Classroom classroom) {
+    public String putBuildingClassroom(@PathVariable("cid") int cid,
+                                       @RequestBody Classroom classroom) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
@@ -151,19 +198,34 @@ public class BuildingClassroomController {
         }else if(classroom.getClassroomNum().length()==0){
             //判断教室是否为空
             jsonData.put("judge","-2");
-        }else if(buildingService.selectByName(classroom.getBuilding().getBuildingNum())!=null&&classroomService.selectByName(classroom.getClassroomNum())!=null){
-            //教学楼教室已存在
-            jsonData.put("judge","-3");
+        }
+
+        if(buildingService.selectByName(classroom.getBuilding().getBuildingNum())==null){
+            //判断教学楼是否存在，不存在则新增
+            try{
+                Building building = new Building();
+                building.setBuildingNum(classroom.getBuilding().getBuildingNum());
+                buildingService.addBuilding(building);
+                //添加成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //添加失败
+                jsonData.put("judge","-9");
+            }
+
         }else{
+            //教学楼存在，修改教学楼教室
+            if(classroomService.selectByName(classroom.getClassroomNum())!=null){
+                //教室存在
+                jsonData.put("judge","-3");
+            }
             try{
                 Classroom classroomOld = classroomService.selectById(cid);
+                Building building = buildingService.selectByName(classroom.getBuilding().getBuildingNum());
 
                 classroomOld.setClassroomNum(classroom.getClassroomNum());
-
-                Building building = buildingService.selectById(classroom.getB_id());
-                building.setBuildingNum(classroom.getBuilding().getBuildingNum());
-
-                buildingService.updateBuilding(building);
+                classroomOld.setB_id(building.getId());
+                
                 classroomService.updateClassroom(classroom);
 
                 //修改成功
@@ -179,19 +241,27 @@ public class BuildingClassroomController {
 
     @ApiOperation(value = "根据id删除教室信息", notes = "根据id删除教室信息notes", produces = "application/json")
     @RequestMapping(value="/{cid}", method=RequestMethod.DELETE)
-    public String deleteUser(@PathVariable("cid") int cid) {
+    public String deleteBuildingClassroom(@PathVariable("cid") int cid) {
         // 处理"/users/{id}"的DELETE请求，用来删除User
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        if(classroomService.selectById(cid)==null){
+        Classroom classroom = classroomService.selectById(cid);
+
+        if(classroom == null){
             jsonData.put("judge","-1");
         }else{
             try{
+                List<Classroom> classroomList = classroomService.selectByBuildingId(classroom.getB_id());
 
                 classroomService.deleteClassroom(cid);
+
+                if(classroomList.size() == 0){
+                    buildingService.deleteBuilding(classroom.getB_id());
+                }
+
                 //删除成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){
