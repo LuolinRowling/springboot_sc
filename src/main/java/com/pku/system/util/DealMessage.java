@@ -81,7 +81,7 @@ public class DealMessage {
         //处理设备开关
         if(msgp[0].equals("success")){
             if(msgp[2].equals("all")){//操作全部
-                //addMessageList("success","device",msgp[1].equals("open")?"开启所有成功":"关闭所有成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                addMessageList("success","device",msgp[1].equals("open")?"开启所有成功":"关闭所有成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                 deviceInfo.setCameraStatus(msgp[1].equals("open")?1:0);
                 deviceInfo.setComputerStatus(msgp[1].equals("open")?1:0);
                 deviceInfo.setProjectorStatus(msgp[1].equals("open")?1:0);
@@ -89,15 +89,16 @@ public class DealMessage {
                     camera.setCameraStatus(msgp[1].equals("open")?1:0);
                 }
             }else if(msgp[2].equals("camera")){//处理摄像头开关
-                Camera camera = cameraList.get(Integer.parseInt(msgp[3]));//获得操作的具体camera
+                int caid = Integer.parseInt(msgp[3])-1;
+                Camera camera = cameraList.get(caid);//获得操作的具体camera
                 camera.setCameraStatus(msgp[1].equals("open")?1:0);
-                //addMessageList("success","device",msgp[1].equals("open")?"开启camera成功":"关闭camera成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                addMessageList("success","device",msgp[1].equals("open")?"开启camera成功":"关闭camera成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
             }else{//处理电脑，投影仪开关
                 String device = msgp[2].substring(0,1).toUpperCase()+msgp[2].substring(1);//首字母大写
                 try {
                     Method method = deviceInfo.getClass().getMethod("set"+device+"Status",int.class);//反射机制
                     method.invoke(deviceInfo,msgp[1].equals("open")?1:0);//1在线，0离线
-                    //addMessageList("success","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"成功":"关闭"+dic.get(msgp[2])+"成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                    addMessageList("success","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"成功":"关闭"+dic.get(msgp[2])+"成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
 
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
@@ -112,19 +113,12 @@ public class DealMessage {
 
             if(msg.contains("singlechip")){//一旦收到操作单片机失败，即把其状态置为异常
                 deviceInfo.setSinglechipStatus(2);
-                //addMessageList("fail","device","单片机异常",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                addMessageList("fail","device","单片机异常",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
             }
 
             String returnM = msgp[1].equals("open")?"开启所有失败 ":"关闭所有失败 ";
 
             if(msgp[2].equals("all")){
-                if(!msg.contains("camera")){
-                    deviceInfo.setCameraStatus(msgp[1].equals("open")?1:0);
-                    returnM += msgp[1].equals("open")?"开启摄像头成功":"关闭摄像头成功";
-                }else if(msg.contains("camera")){
-                    deviceInfo.setCameraStatus(2);
-                }
-
                 if(!msg.contains("computer")){
                     deviceInfo.setComputerStatus(msgp[1].equals("open")?1:0);
                     returnM +=  msgp[1].equals("open")?"开启电脑成功":"关闭电脑成功";
@@ -139,21 +133,81 @@ public class DealMessage {
                     deviceInfo.setProjectorStatus(2);
                 }
 
-                //addMessageList("fail","device",returnM,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                if(!msg.contains("camera")){
+                    deviceInfo.setCameraStatus(msgp[1].equals("open")?1:0);
+                    for(Camera camera: cameraList){
+                        camera.setCameraStatus(msgp[1].equals("open")?1:0);
+                    }
+                    returnM += msgp[1].equals("open")?"开启全部摄像头成功":"关闭全部摄像头成功";
+                }else if(msg.contains("camera")){//多个摄像头失败,摄像头默认拼在末尾
+                    int index = 0;
+                    String total[] = new String[cameraList.size()];//总共有多少个摄像头
+
+                    //获得camera的下标
+                    for(int i=0;i<msgp.length;i++){
+                        if(msgp[i].equals("camera")){
+                            index = i;
+                        }
+                    }
+
+                    String[] caid = new String[msgp.length-index-1];
+                    String[] result = new String[total.length-caid.length];
+
+                    //获得失败的camera的编号
+                    for(int i= index ;i<caid.length+index;i++){
+                        caid[msgp.length-i-2] = Integer.toString(Integer.parseInt(msgp[i+1])-1);
+                    }
+
+                    for(int i=0;i<caid.length;i++){
+                        Camera camera = cameraList.get(Integer.parseInt(caid[i]));//获得操作的具体camera
+                        camera.setCameraStatus(2);
+                    }
+
+                    //total初始化
+                    for(int i=0;i<total.length;i++){
+                        total[i] = Integer.toString(i);
+                    }
+
+                    //求两个数组的差集
+                    if(total.length != caid.length){
+                        result = Array.minus(caid,total);
+                    }
+
+                    for(int i=0;i<result.length;i++){
+                        Camera camera = cameraList.get(Integer.parseInt(result[i]));//获得操作的具体camera
+                        camera.setCameraStatus(msgp[1].equals("open")?1:0);
+                        returnM += msgp[1].equals("open")?"开启摄像头成功":"关闭摄像头成功";
+                    }
+
+
+                }
+
+                addMessageList("fail","device",returnM,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
 
             }else{//单一操作，即操作单个设备
                 String device = msgp[2].substring(0,1).toUpperCase()+msgp[2].substring(1);//首字母大写
-                try {
-                    Method method = deviceInfo.getClass().getMethod("set"+device+"Status",int.class);
-                    method.invoke(deviceInfo,2);
-                    //addMessageList("fail","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"失败":"关闭"+dic.get(msgp[2])+"失败",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                }catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+
+                if(device.equals("Camera")){
+                    int caid = Integer.parseInt(msgp[3])-1;
+                    Camera camera = cameraList.get(caid);//获得操作的具体camera
+                    camera.setCameraStatus(2);
+                    addMessageList("fail","device",msgp[1].equals("open")?"开启camera成功":"关闭camera成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+
+                }else{
+                    try {
+                        Method method = deviceInfo.getClass().getMethod("set"+device+"Status",int.class);
+                        method.invoke(deviceInfo,2);
+                        addMessageList("fail","device",msgp[1].equals("open")?"开启"+dic.get(msgp[2])+"失败":"关闭"+dic.get(msgp[2])+"失败",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+
                 }
+
 
             }
         }
@@ -277,4 +331,6 @@ public class DealMessage {
 
         }
     }
+
+
 }

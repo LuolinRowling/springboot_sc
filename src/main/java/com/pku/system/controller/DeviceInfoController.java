@@ -141,7 +141,7 @@ public class DeviceInfoController {
         }else if(computerTypeService.selectByAll(computerTypeName,memorySize,diskSize,operatingSystem)!=null){
             //判断电脑设备是否存在
             jsonData.put("judge","-5");
-        }else if(cameraTypeService.selectById(coid)==null){
+        }else if(computerTypeService.selectById(coid) == null){
             jsonData.put("judge","-6");
         }else{
             try{

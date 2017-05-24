@@ -7,6 +7,7 @@ import com.pku.system.service.CameraService;
 import com.pku.system.service.DeviceInfoService;
 import com.pku.system.util.DealMessage;
 import com.pku.system.util.ParseData;
+import com.pku.system.util.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,13 +30,13 @@ public class NewWebSocket {
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
     private String ownId;
+
     DealMessage dealMessage = new DealMessage();
+    Time time  = new Time();
 
     public static List<WSocketMessage> wSocketMessageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> wSocketMessageListCenter = new ArrayList<WSocketMessage>();
     public static Map<String,String> messageMap = new HashMap<String,String>();
-
-    Map<String, String> dic = new HashMap<String, String>(){{ put("camera", "摄像头"); put("computer", "电脑");put("projector", "投影仪"); }};
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     // 若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
@@ -44,6 +45,7 @@ public class NewWebSocket {
     //与客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
     public NewWebSocket() {
+
     }
 
     /**
@@ -154,8 +156,8 @@ public class NewWebSocket {
 //        for(Camera camera:cameraList){
 //            cameraService.updateCamera(camera);
 //        }
-        DeviceMonitorController.messageMap.put(sid,sid);
-        sendDeviceMessageToOne("lalala",ownId,"receive");
+        DeviceMonitorController.messageMap.put(sid,msg);
+        sendDeviceMessageToOne(time.getCurrentTime(),ownId,"receive");
     }
 
     /**
