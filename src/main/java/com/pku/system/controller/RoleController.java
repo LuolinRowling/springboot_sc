@@ -103,10 +103,14 @@ public class RoleController {
         JSONObject jsonData = new JSONObject();
 
         if(role.getR_name().length()==0){
+            //判断角色名为空
             jsonData.put("judge","-1");
         }else if(roleService.selectByRoleName(role.getR_name())!=null&&judge){
-            //判断用户名是否存在
+            //判断角色名是否存在
             jsonData.put("judge","-2");
+        }else if(roleService.selectById(rid) == null){
+            //判断角色是否存在
+            jsonData.put("judge","-3");
         }else{
             try{
                 Role roleOld = roleService.selectById(rid);

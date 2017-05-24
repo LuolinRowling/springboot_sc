@@ -141,9 +141,17 @@ public class DeviceInfoController {
         }else if(computerTypeService.selectByAll(computerTypeName,memorySize,diskSize,operatingSystem)!=null){
             //判断电脑设备是否存在
             jsonData.put("judge","-5");
+        }else if(cameraTypeService.selectById(coid)==null){
+            jsonData.put("judge","-6");
         }else{
             try{
-                computerTypeService.updateComputerType(computerType);
+                ComputerType computerTypeOld = computerTypeService.selectById(coid);
+                computerTypeOld.setComputerTypeName(computerTypeName);
+                computerTypeOld.setMemorySize(memorySize);
+                computerTypeOld.setDiskSize(diskSize);
+                computerTypeOld.setOperatingSystem(operatingSystem);
+
+                computerTypeService.updateComputerType(computerTypeOld);
                 //修改成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){
@@ -226,9 +234,14 @@ public class DeviceInfoController {
         }else if(raspberryTypeService.selectByName(raspberryTypeName)!=null){
             //判断电脑设备是否存在
             jsonData.put("judge","-5");
+        }else if(raspberryTypeService.selectById(raid) == null){
+            jsonData.put("judge","-2");
         }else{
             try{
-                raspberryTypeService.updateRaspberryType(raspberryType);
+                RaspberryType raspberryTypeOld = raspberryTypeService.selectById(raid);
+                raspberryTypeOld.setRaspberryTypeName(raspberryTypeName);
+
+                raspberryTypeService.updateRaspberryType(raspberryTypeOld);
                 //修改成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){
@@ -286,7 +299,7 @@ public class DeviceInfoController {
         if(singlechipType == null){
             jsonData.put("judge","-1");
         }else{
-            jsonData.put("singlechip",singlechipType);
+            jsonData.put("singleChip",singlechipType);
             jsonData.put("judge","0");
         }
         jsonObject.put("data",jsonData);
@@ -296,11 +309,13 @@ public class DeviceInfoController {
     @ApiOperation(value = "根据id修改单片机类型", notes = "根据id修改单片机类型notes", produces = "application/json")
     @RequestMapping(value="/singleChipType/{sid}", method=RequestMethod.PUT)
     public String putSingleChipType(@PathVariable("sid") int sid,
-                                    @RequestParam(value = "singlechipTypeName")String singlechipTypeName) {
+                                    @RequestBody SinglechipType singlechipType) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        String singlechipTypeName = singlechipType.getSinglechipTypeName();
 
         if(singlechipTypeName.length()==0){
             //判断单片机类型是否为空
@@ -308,12 +323,14 @@ public class DeviceInfoController {
         }else if(singlechipTypeService.selectByName(singlechipTypeName)!=null){
             //判断单片机是否存在
             jsonData.put("judge","-5");
+        }else if(singlechipTypeService.selectById(sid) == null){
+            jsonData.put("judge","-2");
         }else{
             try{
-                SinglechipType singlechipType = new SinglechipType();
-                singlechipType.setSinglechipTypeId(sid);
-                singlechipType.setSinglechipTypeName(singlechipTypeName);
-                singlechipTypeService.updateSinglechipType(singlechipType);
+                SinglechipType singlechipTypeOld = singlechipTypeService.selectById(sid);
+                singlechipTypeOld.setSinglechipTypeName(singlechipTypeName);
+
+                singlechipTypeService.updateSinglechipType(singlechipTypeOld);
                 //修改成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){
@@ -328,7 +345,7 @@ public class DeviceInfoController {
     @ApiOperation(value = "添加摄像头类型", notes = "添加摄像头类型notes", produces = "application/json")
     @RequestMapping(value="/cameraType/", method=RequestMethod.POST)
     @ResponseBody
-    public String postCameraTypeType(@RequestBody CameraType cameraType) {
+    public String postCameraType(@RequestBody CameraType cameraType) {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
@@ -359,7 +376,7 @@ public class DeviceInfoController {
 
     @ApiOperation(value = "根据id查询摄像头类型", notes = "根据id查询摄像头类型notes", produces = "application/json")
     @RequestMapping(value="/cameraType/{cid}", method=RequestMethod.GET)
-    public String getCameraTypeType(@PathVariable("cid") int cid){
+    public String getCameraType(@PathVariable("cid") int cid){
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
@@ -381,7 +398,7 @@ public class DeviceInfoController {
     @ApiOperation(value = "根据id修改摄像头类型", notes = "根据id修改摄像头类型notes", produces = "application/json")
     @RequestMapping(value="/cameraType/{cid}", method=RequestMethod.PUT)
     @ResponseBody
-    public String putCameraTypeTyp(@PathVariable("cid") int cid,
+    public String putCameraType(@PathVariable("cid") int cid,
                                    @RequestBody CameraType cameraType) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
@@ -396,9 +413,14 @@ public class DeviceInfoController {
         }else if(cameraTypeService.selectByName(cameraTypeName)!=null){
             //判断摄像头是否存在
             jsonData.put("judge","-5");
+        }else if(cameraTypeService.selectById(cid) == null){
+            jsonData.put("judge","-2");
         }else{
             try{
-                cameraTypeService.updateCameraType(cameraType);
+                CameraType cameraTypeOld = cameraTypeService.selectById(cid);
+                cameraTypeOld.setCameraTypeName(cameraTypeName);
+
+                cameraTypeService.updateCameraType(cameraTypeOld);
                 //修改成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){
@@ -463,7 +485,7 @@ public class DeviceInfoController {
         return jsonObject.toString();
     }
 
-    @ApiOperation(value = "根据id修改单片机类型", notes = "根据id修改单片机类型notes", produces = "application/json")
+    @ApiOperation(value = "根据id修改投影仪类型", notes = "根据id修改投影仪类型notes", produces = "application/json")
     @RequestMapping(value="/projectorType/{pid}", method=RequestMethod.PUT)
     @ResponseBody
     public String putProjectorType(@PathVariable("pid") int pid,
@@ -481,9 +503,14 @@ public class DeviceInfoController {
         }else if(projectorTypeService.selectByName(projectorTypeName)!=null){
             //判断投影仪类型是否存在
             jsonData.put("judge","-5");
+        }else if(projectorTypeService.selectById(pid) == null){
+            jsonData.put("judge","-2");
         }else{
             try{
-                projectorTypeService.updateProjectorType(projectorType);
+                ProjectorType projectorTypeOld = projectorTypeService.selectById(pid);
+                projectorTypeOld.setProjectorTypeName(projectorTypeName);
+
+                projectorTypeService.updateProjectorType(projectorTypeOld);
                 //修改成功
                 jsonData.put("judge","0");
             }catch (DataAccessException e){

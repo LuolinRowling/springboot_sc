@@ -150,7 +150,7 @@ public class BuildingClassroomController {
         return jsonObject.toString();
     }
 
-    @ApiOperation(value = "根据id修改教学楼教室信息", notes = "根据id修改教学楼教室信息notes", produces = "application/json")
+    @ApiOperation(value = "根据id修改教学楼信息", notes = "根据id修改教学楼信息notes", produces = "application/json")
     @RequestMapping(value="/buildings/{bid}", method=RequestMethod.PUT)
     @ResponseBody
     public String putBuilding(@PathVariable("bid") int bid,
@@ -163,6 +163,9 @@ public class BuildingClassroomController {
         if(building.getBuildingNum()==null){
             //判断教学楼是否为空
             jsonData.put("judge","-1");
+        }else if(buildingService.selectByName(building.getBuildingNum())!=null){
+            //教学楼重名
+            jsonData.put("judge","-2");
         }else{
             try{
                 Building buildingOld = buildingService.selectById(bid);
@@ -218,6 +221,10 @@ public class BuildingClassroomController {
             if(classroomService.selectByName(classroom.getClassroomNum())!=null){
                 //教室存在
                 jsonData.put("judge","-3");
+            }
+            if(classroomService.selectById(cid)==null){
+                //教室存在
+                jsonData.put("judge","-4");
             }
             try{
                 Classroom classroomOld = classroomService.selectById(cid);

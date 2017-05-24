@@ -124,6 +124,9 @@ public class UserController {
         }else if(userService.selectByName(user.getUsername())!=null&&judge){
             //判断用户名是否存在
             jsonData.put("judge","-3");
+        }else if(userService.selectById(uid) == null){
+            //判断用户是否存在
+            jsonData.put("judge","-4");
         }else{
             try{
                 userService.updateUser(user);

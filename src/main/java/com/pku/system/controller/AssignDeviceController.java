@@ -229,23 +229,43 @@ public class AssignDeviceController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        try{
-            deviceInfoService.updateDeviceInfo(deviceInfo);
+        if(deviceInfo.getBuildingNum().length()==0){
+            //判断教学楼号是否为空
+            jsonData.put("judge","-1");
+        }else if(deviceInfo.getClassroomNum().length()==0){
+            //判断教室号是否为空
+            jsonData.put("judge","-2");
+        }else if(deviceInfoService.selectByBuildingClassroom(deviceInfo.getBuildingNum(),deviceInfo.getClassroomNum())!=null){
+            //判断同一个教学楼的教室是否已经分配设备
+            jsonData.put("judge","-3");
+        }else if(deviceInfoService.selectById(did) == null){
+            jsonData.put("judge","-4");
+        }else{
+            try{
+                DeviceInfo deviceInfoOld = deviceInfoService.selectById(did);
+                deviceInfoOld.setComputerTypeId(deviceInfo.getComputerTypeId());
+                deviceInfoOld.setSinglechipTypeId(deviceInfo.getSinglechipTypeId());
+                deviceInfoOld.setProjectorTypeId(deviceInfo.getProjectorTypeId());
+                deviceInfoOld.setRaspberryTypeId(deviceInfo.getRaspberryTypeId());
 
-            Camera camera = new Camera();
+                deviceInfoService.updateDeviceInfo(deviceInfoOld);
 
-            for(int i=0;i<deviceInfo.getCameraList().size();i++) {
-                camera.setCameraTypeId(deviceInfo.getCameraList().get(i).getCameraTypeId());
-                camera.setCameraAngle(deviceInfo.getCameraList().get(i).getCameraAngle());
-                camera.setDid(did);
-                cameraService.updateCamera(camera);
+                Camera camera = new Camera();
+
+                for(int i=0;i<deviceInfo.getCameraList().size();i++) {
+                    camera.setCameraTypeId(deviceInfo.getCameraList().get(i).getCameraTypeId());
+                    camera.setCameraAngle(deviceInfo.getCameraList().get(i).getCameraAngle());
+                    camera.setDid(did);
+                    cameraService.updateCamera(camera);
+                }
+                //修改成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
             }
-            //修改成功
-            jsonData.put("judge","0");
-        }catch (DataAccessException e){
-            //修改失败
-            jsonData.put("judge","-9");
         }
+
         jsonObject.put("data",jsonData);
         return jsonObject.toString();
     }
