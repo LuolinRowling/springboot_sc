@@ -119,20 +119,21 @@ public class AssignDeviceController {
 
     /**
      * 更换教学楼，对应的教室号变化
-     * @param bid
+     * @param buildingNum
      * @return
      */
     @ApiOperation(value = "更换教学楼，对应的教室号变化", notes = "更换教学楼，对应的教室号变化notes", produces = "application/json")
-    @RequestMapping(value="/ajax_change_building/{bid}", method= RequestMethod.GET)
-    public String ajaxChangeBuilding(@PathVariable(value="bid")int bid){
+    @RequestMapping(value="/ajax_change_building", method= RequestMethod.GET)
+    public String ajaxChangeBuilding(@RequestParam(value="buildingNum")String buildingNum){
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        List<Classroom> classroomList = classroomService.selectByBuildingId(bid);
-        jsonData.put("classroomlist",classroomList);
+        Building building = buildingService.selectByName(buildingNum);
+        List<Classroom> classroomList = classroomService.selectByBuildingId(building.getId());
+        jsonData.put("classroomList",classroomList);
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();
@@ -224,9 +225,21 @@ public class AssignDeviceController {
         JSONObject jsonData = new JSONObject();
 
         DeviceInfo deviceInfo = deviceInfoService.selectById(did);
-        List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfo.getId());
-        deviceInfo.setCameraList(cameraList);
-        jsonData.put("deviceInfo",deviceInfo);
+
+        if(deviceInfo==null){
+            jsonData.put("judge","-1");
+        }else{
+            try{
+                List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfo.getId());
+                deviceInfo.setCameraList(cameraList);
+                jsonData.put("deviceInfo",deviceInfo);
+                jsonData.put("judge","0");
+
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
+            }
+        }
 
         jsonObject.put("data",jsonData);
         return jsonObject.toString();

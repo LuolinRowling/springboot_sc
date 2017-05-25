@@ -36,10 +36,10 @@ public interface DeviceInfoDao {
     @Select("select * from device_info where id != #{id}")
     public List<DeviceInfo> selectAllExceptId(int id);
 
-    @Insert("insert into device_info (id,buildingNum,classroomNum,singlechipTypeId,raspberryTypeId,raspberryCode,cameraTypeId,computerTypeId,projectorTypeId) values (#{id},#{buildingNum},#{classroomNum},#{singlechipTypeId},#{raspberryTypeId},#{raspberryCode},#{cameraTypeId},#{computerTypeId},#{projectorTypeId})")
+    @Insert("insert into device_info (id,buildingNum,classroomNum,singlechipTypeId,raspberryTypeId,computerTypeId,projectorTypeId) values (#{id},#{buildingNum},#{classroomNum},#{singlechipTypeId},#{raspberryTypeId},#{computerTypeId},#{projectorTypeId})")
     public void addDeviceInfo(DeviceInfo deviceInfo);
 
-    @Update("update device_info set singlechipTypeId=#{singlechipTypeId},raspberryTypeId=#{raspberryTypeId},raspberryCode=#{raspberryCode},cameraTypeId=#{cameraTypeId},computerTypeId=#{computerTypeId},projectorTypeId=#{projectorTypeId} where id=#{id}")
+    @Update("update device_info set singlechipTypeId=#{singlechipTypeId},raspberryTypeId=#{raspberryTypeId},computerTypeId=#{computerTypeId},projectorTypeId=#{projectorTypeId} where id=#{id}")
     public void updateDeviceInfo(DeviceInfo deviceInfo);
 
     @Update("update device_info set singlechipStatus=#{singlechipStatus},raspberryStatus=#{raspberryStatus},raspberryStreamStatus=#{raspberryStreamStatus},cameraStatus=#{cameraStatus},computerStatus=#{computerStatus},projectorStatus=#{projectorStatus} where id=#{id}")

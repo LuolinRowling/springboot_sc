@@ -13,7 +13,7 @@ public interface CameraDao {
     @Select("select * from camera where did = #{did}")
     public List<Camera> selectByDeviceId(int did);
 
-    @Insert("insert into camera (cameraId,cameraTypeId,cameraStatus,cameraAngle,did) values (#cameraId},#{cameraTypeId},#{cameraStatus},#{cameraAngle},#{did})")
+    @Insert("insert into camera (cameraTypeId,cameraStatus,cameraAngle,did) values (#{cameraTypeId},#{cameraStatus},#{cameraAngle},#{did})")
     public void addCamera(Camera camera);
 
     @Update("update camera set cameraTypeId=#{cameraTypeId},cameraStatus=#{cameraStatus},cameraAngle=#{cameraAngle} where cameraId=#{cameraId}")
