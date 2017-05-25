@@ -31,12 +31,10 @@ public class NewWebSocket {
     private static int onlineCount = 0;
     private String ownId;
 
-    DealMessage dealMessage = new DealMessage();
     Time time  = new Time();
 
     public static List<WSocketMessage> wSocketMessageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> wSocketMessageListCenter = new ArrayList<WSocketMessage>();
-    public static Map<String,String> messageMap = new HashMap<String,String>();
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     // 若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
@@ -67,7 +65,6 @@ public class NewWebSocket {
             hashMap = webSocketHashMap.get(ownId);
             hashMap.clear();
             hashMap.put(session.getId(), this);
-            // webSocketHashMap.put(ownId, hashMap);
         }
         //webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
@@ -157,6 +154,8 @@ public class NewWebSocket {
 //            cameraService.updateCamera(camera);
 //        }
         DeviceMonitorController.messageMap.put(sid,msg);
+        VideoController.messageMap.put(sid,msg);
+
         sendDeviceMessageToOne(time.getCurrentTime(),ownId,"receive");
     }
 

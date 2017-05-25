@@ -4,6 +4,15 @@ public class PullInfo {
     private int id;
     private String buildingNum;
     private String classroomNum;
+    private String[] pullList;
+
+    public String[] getPullList() {
+        return pullList;
+    }
+
+    public void setPullList(String[] pullList) {
+        this.pullList = pullList;
+    }
 
     public int getId() {
         return id;

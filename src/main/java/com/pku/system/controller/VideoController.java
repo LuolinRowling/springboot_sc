@@ -20,7 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.pku.system.controller.NewWebSocket.wSocketMessageList;
+import static com.pku.system.controller.NewWebSocket.wSocketMessageListCenter;
 
 @Api(value="视频管理",tags = {"视频管理API"},description = "视频流调度")
 @RestController
@@ -41,6 +46,8 @@ public class VideoController {
 
     public static List<WSocketMessage> messageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> messageListCenter = new ArrayList<WSocketMessage>();
+
+    public static Map<String,String> messageMap = new HashMap<String,String>();
 
     @ApiOperation(value = "获得视频推拉流列表", notes = "获得视频推拉流列表notes", produces = "application/json")
     @RequestMapping(value="/", method= RequestMethod.GET)
@@ -73,68 +80,98 @@ public class VideoController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        String id = time.getCurrentTime();
+        //String id = time.getCurrentTime();
+        String id = "201705191437450023";
 
-        try{
-            System.out.println(did+" "+operation);
-            deviceInfo = deviceInfoService.selectById(did);
-            List<DeviceInfo> deviceInfoStreamList = deviceInfoService.selectAllExceptId(did);
+        System.out.println(did+" "+operation);
+        deviceInfo = deviceInfoService.selectById(did);
+        List<DeviceInfo> deviceInfoStreamList = deviceInfoService.selectAllExceptId(did);
 
-            NewWebSocket nbs = new NewWebSocket();
+        NewWebSocket nbs = new NewWebSocket();
 
-            //dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
+        //dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
 
-            if(operation.contains("push")){
-                //nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.PUSHHEADER+deviceInfo.getRaspberryCode()+Constant.PUSHFOOTER,
-                //operation.equals("start_push")?Constant.STARTPUSH:Constant.STOPTPUSH);
-                nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
-                        operation.equals("start_push")?Constant.STARTPUSH:Constant.STOPTPUSH);
-            }else if(operation.contains("pull")) {//停止拉流
+        if(operation.contains("push")){
+            //nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.PUSHHEADER+deviceInfo.getRaspberryCode()+Constant.PUSHFOOTER,
+            //operation.equals("start_push")?Constant.STARTPUSH:Constant.STOPTPUSH);
+            nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
+                    operation.equals("start_push")?Constant.STARTPUSH:Constant.STOPTPUSH);
+        }else if(operation.contains("pull")) {//停止拉流
+            try {
                 Thread.sleep(6 * 1000);//睡眠3s
-
-                nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(), "serverAddress", Constant.STOPTPULL);
-            }else{//广播，实则为一个教室推流，其余教室拉流
-                //nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.PUSHHEADER+deviceInfo.getRaspberryCode()+Constant.PUSHFOOTER,
-                //operation.equals("start_broadcast")?Constant.STARTPUSHBROADCAST:Constant.STOPTPUSHBROADCAST);//选择广播的教室推流
-                nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
-                        operation.equals("start_broadcast")?Constant.STARTPUSHBROADCAST:Constant.STOPTPUSHBROADCAST);//选择广播的教室推流
-
-                //是否需要睡眠时间，需要和安卓组商量
-                Thread.sleep(6*1000);//睡眠3s
-
-                for(int i=0;i<deviceInfoStreamList.size();i++){
-                    //nbs.sendMessageToOne(deviceInfoStreamList.get(i).getRaspberryCode(),Constant.PULLHEADER+deviceInfo.getRaspberryCode()+Constant.PULLFOOTER,
-                    //operation.equals("start_broadcast")?Constant.STARTPULL:Constant.STOPTPULL);//其余教室拉流
-                    nbs.sendMessageToOne(id,deviceInfoStreamList.get(i).getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
-                            operation.equals("start_broadcast")?Constant.STARTPULL:Constant.STOPTPULL);//其余教室拉流
-
-                    PullInfo pullInfoOld = pullInfoService.selectById(deviceInfoStreamList.get(i).getId());
-                    if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
-                        pullInfoOld.setBuildingNum(deviceInfo.getBuildingNum());
-                        pullInfoOld.setClassroomNum(deviceInfo.getClassroomNum());
-                        pullInfoService.updatePullInfo(pullInfoOld);
-                    }else{
-                        pullInfo.setId(deviceInfoStreamList.get(i).getId());
-                        pullInfo.setBuildingNum(deviceInfo.getBuildingNum());
-                        pullInfo.setClassroomNum(deviceInfo.getClassroomNum());
-                        pullInfoService.addPullInfo(pullInfo);
-                    }
-
-                    //dealMessage.addMessageList(deviceInfoStreamList.get(i).getRaspberryCode(),deviceInfoStreamList.get(i).getBuildingNum()+deviceInfoStreamList.get(i).getClassroomNum(),messageList,deviceInfo,messageListCenter);
-                }
-
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            //修改成功
-            jsonData.put("judge","0");
-        }catch (DataAccessException e){
-            //修改失败
-            jsonData.put("judge","-9");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(), "serverAddress", Constant.STOPTPULL);
+        }else{//广播，实则为一个教室推流，其余教室拉流
+            //nbs.sendMessageToOne(deviceInfo.getRaspberryCode(),Constant.PUSHHEADER+deviceInfo.getRaspberryCode()+Constant.PUSHFOOTER,
+            //operation.equals("start_broadcast")?Constant.STARTPUSHBROADCAST:Constant.STOPTPUSHBROADCAST);//选择广播的教室推流
+            nbs.sendMessageToOne(id,deviceInfo.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
+                    operation.equals("start_broadcast")?Constant.STARTPUSHBROADCAST:Constant.STOPTPUSHBROADCAST);//选择广播的教室推流
+
+            //是否需要睡眠时间，需要和安卓组商量
+            try {
+                Thread.sleep(6*1000);//睡眠3s
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            for(int i=0;i<deviceInfoStreamList.size();i++){
+                //nbs.sendMessageToOne(deviceInfoStreamList.get(i).getRaspberryCode(),Constant.PULLHEADER+deviceInfo.getRaspberryCode()+Constant.PULLFOOTER,
+                //operation.equals("start_broadcast")?Constant.STARTPULL:Constant.STOPTPULL);//其余教室拉流
+                nbs.sendMessageToOne(id,deviceInfoStreamList.get(i).getRaspberryCode(),Constant.STREAMADDRESS+deviceInfo.getRaspberryCode(),
+                        operation.equals("start_broadcast")?Constant.STARTPULL:Constant.STOPTPULL);//其余教室拉流
+
+                PullInfo pullInfoOld = pullInfoService.selectById(deviceInfoStreamList.get(i).getId());
+                if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
+                    pullInfoOld.setBuildingNum(deviceInfo.getBuildingNum());
+                    pullInfoOld.setClassroomNum(deviceInfo.getClassroomNum());
+                    pullInfoService.updatePullInfo(pullInfoOld);
+                }else{
+                    pullInfo.setId(deviceInfoStreamList.get(i).getId());
+                    pullInfo.setBuildingNum(deviceInfo.getBuildingNum());
+                    pullInfo.setClassroomNum(deviceInfo.getClassroomNum());
+                    pullInfoService.addPullInfo(pullInfo);
+                }
+
+                //dealMessage.addMessageList(deviceInfoStreamList.get(i).getRaspberryCode(),deviceInfoStreamList.get(i).getBuildingNum()+deviceInfoStreamList.get(i).getClassroomNum(),messageList,deviceInfo,messageListCenter);
+            }
         }
-        jsonObject.put("data",jsonData);
-        return jsonObject.toString();
+
+        while(true){
+            if(messageMap.get(id) == null){
+                //System.out.println(id);
+                continue;
+            }else{
+                try{
+                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+
+                    if(messageMap.get(id).contains("broadcast")){
+                        dealMessage.streamOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getRaspberryCode(),wSocketMessageList,wSocketMessageListCenter);
+                        for(int i=0;i<deviceInfoStreamList.size();i++){
+                            dealMessage.streamOperation(msgp,deviceInfoStreamList.get(i),messageMap.get(id),deviceInfoStreamList.get(i).getRaspberryCode(),wSocketMessageList,wSocketMessageListCenter);
+                            deviceInfoService.updateDeviceInfoStatus(deviceInfoStreamList.get(i));
+                        }
+                    }else{
+                        if(messageMap.get(id).contains("push")||messageMap.get(id).contains("pull")){
+                            dealMessage.streamOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getRaspberryCode(),wSocketMessageList,wSocketMessageListCenter);
+                        }
+                    }
+
+                    deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+
+                    //修改成功
+                    jsonData.put("judge","0");
+                }catch (DataAccessException e){
+                    //修改失败
+                    jsonData.put("judge","-9");
+                }
+
+                jsonObject.put("data",jsonData);
+                return jsonObject.toString();
+            }
+        }
     }
 
     /**
@@ -202,46 +239,63 @@ public class VideoController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        String id = time.getCurrentTime();
+        //String id = time.getCurrentTime();
+        String id = "201705191437450023";
 
-        //修改成功
-        jsonData.put("judge","0");
-        try{
-            System.out.println(did+" "+buildingNum+" "+classroomNum);
-            deviceInfoPull = deviceInfoService.selectById(did);
-            DeviceInfo deviceInfoPush = deviceInfoService.selectByBuildingClassroom(buildingNum,classroomNum);
+        System.out.println(did+" "+buildingNum+" "+classroomNum);
+        deviceInfoPull = deviceInfoService.selectById(did);
+        DeviceInfo deviceInfoPush = deviceInfoService.selectByBuildingClassroom(buildingNum,classroomNum);
 
-            NewWebSocket nbs = new NewWebSocket();
+        NewWebSocket nbs = new NewWebSocket();
 
-            dealMessage.addMessageList(deviceInfoPull.getRaspberryCode(),deviceInfoPull.getBuildingNum()+deviceInfoPull.getClassroomNum(),messageList,deviceInfoPull,messageListCenter);
+        dealMessage.addMessageList(deviceInfoPull.getRaspberryCode(),deviceInfoPull.getBuildingNum()+deviceInfoPull.getClassroomNum(),messageList,deviceInfoPull,messageListCenter);
 
+        try {
             Thread.sleep(6*1000);//睡眠3s
-            //nbs.sendMessageToOne(deviceInfoPull.getRaspberryCode(),Constant.PULLHEADER+deviceInfoPush.getRaspberryCode()+Constant.PULLFOOTER,Constant.STARTPULL);
-
-            nbs.sendMessageToOne(id,deviceInfoPull.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfoPush.getRaspberryCode(),Constant.STARTPULL);
-
-            PullInfo pullInfoOld = pullInfoService.selectById(did);
-            if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
-                pullInfoOld.setBuildingNum(buildingNum);
-                pullInfoOld.setClassroomNum(classroomNum);
-                pullInfoService.updatePullInfo(pullInfoOld);
-            }else{
-                pullInfo.setId(did);
-                pullInfo.setBuildingNum(buildingNum);
-                pullInfo.setClassroomNum(classroomNum);
-                pullInfoService.addPullInfo(pullInfo);
-            }
-
-            //修改成功
-            jsonData.put("judge","0");
-        }catch (DataAccessException e){
-            //修改失败
-            jsonData.put("judge","-9");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        jsonObject.put("data",jsonData);
-        return jsonObject.toString();
+        //nbs.sendMessageToOne(deviceInfoPull.getRaspberryCode(),Constant.PULLHEADER+deviceInfoPush.getRaspberryCode()+Constant.PULLFOOTER,Constant.STARTPULL);
+
+        nbs.sendMessageToOne(id,deviceInfoPull.getRaspberryCode(),Constant.STREAMADDRESS+deviceInfoPush.getRaspberryCode(),Constant.STARTPULL);
+
+        PullInfo pullInfoOld = pullInfoService.selectById(did);
+        if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
+            pullInfoOld.setBuildingNum(buildingNum);
+            pullInfoOld.setClassroomNum(classroomNum);
+            pullInfoService.updatePullInfo(pullInfoOld);
+        }else{
+            pullInfo.setId(did);
+            pullInfo.setBuildingNum(buildingNum);
+            pullInfo.setClassroomNum(classroomNum);
+            pullInfoService.addPullInfo(pullInfo);
+        }
+
+        while(true){
+
+            if(messageMap.get(id) == null){
+                continue;
+
+            }else{
+                try{
+                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+
+                    dealMessage.streamOperation(msgp,deviceInfoPull,messageMap.get(id),deviceInfoPull.getRaspberryCode(),wSocketMessageList,wSocketMessageListCenter);
+
+                    deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
+
+                    //修改成功
+                    jsonData.put("judge","0");
+                }catch (DataAccessException e){
+                    //修改失败
+                    jsonData.put("judge","-9");
+                }
+
+                jsonObject.put("data",jsonData);
+                return jsonObject.toString();
+            }
+        }
+
     }
 
     /**
@@ -279,24 +333,26 @@ public class VideoController {
      * @return
      */
     @ApiOperation(value = "多个教室拉流", notes = "多个教室拉流notes", produces = "application/json")
-    @RequestMapping(value="/multiplePullStreamStatus", method= RequestMethod.GET, consumes = "application/json")
-    public String ajaxMultiplePullStreamStatus(@RequestParam(value="buildingNum")String buildingNum,
-                                        @RequestParam(value="classroomNum")String classroomNum,
-                                        @RequestParam(value="pullList[]")String[] pullList){
+    @RequestMapping(value="/multiplePullStreamStatus", method= RequestMethod.POST)
+    @ResponseBody
+    public String ajaxMultiplePullStreamStatus(@RequestBody PullInfo pullInfo) {
+                                        //@RequestParam(value="buildingNum")String buildingNum,
+                                        //@RequestParam(value="classroomNum")String classroomNum,
+                                        //@RequestParam(value="pullList[]")String[] pullList){
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        String id = time.getCurrentTime();
+        //String id = time.getCurrentTime();
+        String id = "201705191437450023";
 
-        //修改成功
-        jsonData.put("judge","0");
-        System.out.println(pullList.toString()+" "+buildingNum+" "+classroomNum);
-        DeviceInfo deviceInfoPush = deviceInfoService.selectByBuildingClassroom(buildingNum,classroomNum);//推流的信息
-        for(int i=0;i<pullList.length;i++){
-            String res = pullList[i];
+        System.out.println(pullInfo.getPullList().toString()+" "+pullInfo.getBuildingNum()+" "+pullInfo.getClassroomNum());
+
+        DeviceInfo deviceInfoPush = deviceInfoService.selectByBuildingClassroom(pullInfo.getBuildingNum(),pullInfo.getClassroomNum());//推流的信息
+        for(int i=0;i<pullInfo.getPullList().length;i++){
+            String res = pullInfo.getPullList()[i];
             String[] pullInfoArray = res.split(";");
             deviceInfoPull = deviceInfoService.selectByBuildingClassroom(pullInfoArray[0],pullInfoArray[1]);//获得选择拉流的教室信息
 
@@ -311,13 +367,13 @@ public class VideoController {
 
                 PullInfo pullInfoOld = pullInfoService.selectById(deviceInfoPull.getId());
                 if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
-                    pullInfoOld.setBuildingNum(buildingNum);
-                    pullInfoOld.setClassroomNum(classroomNum);
+                    pullInfoOld.setBuildingNum(pullInfo.getBuildingNum());
+                    pullInfoOld.setClassroomNum(pullInfo.getClassroomNum());
                     pullInfoService.updatePullInfo(pullInfoOld);
                 }else{
                     pullInfo.setId(deviceInfoPull.getId());
-                    pullInfo.setBuildingNum(buildingNum);
-                    pullInfo.setClassroomNum(classroomNum);
+                    pullInfo.setBuildingNum(pullInfo.getBuildingNum());
+                    pullInfo.setClassroomNum(pullInfo.getClassroomNum());
                     pullInfoService.addPullInfo(pullInfo);
                 }
             } catch (InterruptedException e1) {
@@ -326,8 +382,34 @@ public class VideoController {
 
         }
 
-        jsonObject.put("data",jsonData);
-        return jsonObject.toString();
+        while(true){
+            if(messageMap.get(id) == null){
+                continue;
+            }else{
+                try{
+                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+
+                    for(int i=0;i<pullInfo.getPullList().length;i++){
+                        String res = pullInfo.getPullList()[i];
+                        String[] pullInfoArray = res.split(";");
+                        deviceInfoPull = deviceInfoService.selectByBuildingClassroom(pullInfoArray[0],pullInfoArray[1]);//获得选择拉流的教室信息
+
+                        dealMessage.streamOperation(msgp,deviceInfoPull,messageMap.get(id),deviceInfoPull.getRaspberryCode(),wSocketMessageList,wSocketMessageListCenter);
+
+                        deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
+                    }
+
+                    //修改成功
+                    jsonData.put("judge","0");
+                }catch (DataAccessException e){
+                    //修改失败
+                    jsonData.put("judge","-9");
+                }
+
+                jsonObject.put("data",jsonData);
+                return jsonObject.toString();
+            }
+        }
     }
 
     /**
@@ -376,7 +458,8 @@ public class VideoController {
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
 
-        String id = time.getCurrentTime();
+        //String id = time.getCurrentTime();
+        String id = "201705191437450023";
 
         System.out.println(did+" "+code+" "+direction);
 
