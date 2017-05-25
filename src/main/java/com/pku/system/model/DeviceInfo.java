@@ -17,6 +17,7 @@ public class DeviceInfo {
     private int computerStatus;
     private int projectorTypeId;
     private int projectorStatus;
+
     private ComputerType computerType;
     private SinglechipType singlechipType;
     private ProjectorType projectorType;

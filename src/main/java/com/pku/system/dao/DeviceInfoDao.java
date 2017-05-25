@@ -25,11 +25,11 @@ public interface DeviceInfoDao {
             "co.memorySize," +
             "co.diskSize," +
             "co.operatingSystem," +
-            "p.projectorTypeName" +
+            "p.projectorTypeName " +
             "FROM device_info di " +
-            "INNER JOIN singlechipType s ON di.singlechipTypeId=s.singlechipTypeId" +
-            "INNER JOIN raspberryType r ON di.raspberryTypeId=r.raspberryTypeId" +
-            "INNER JOIN computerType co ON di.computerTypeId=co.computerTypeId" +
+            "INNER JOIN singlechipType s ON di.singlechipTypeId=s.singlechipTypeId " +
+            "INNER JOIN raspberryType r ON di.raspberryTypeId=r.raspberryTypeId " +
+            "INNER JOIN computerType co ON di.computerTypeId=co.computerTypeId " +
             "INNER JOIN projectorType p ON di.projectorTypeId=p.projectorTypeId")
     public List<DeviceInfo> getAllDeviceInfo();
 

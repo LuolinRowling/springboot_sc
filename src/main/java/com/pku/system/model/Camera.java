@@ -6,6 +6,15 @@ public class Camera {
     private int cameraStatus;
     private String cameraAngle;
     private int did;
+    private String cameraTypeName;
+
+    public String getCameraTypeName() {
+        return cameraTypeName;
+    }
+
+    public void setCameraTypeName(String cameraTypeName) {
+        this.cameraTypeName = cameraTypeName;
+    }
 
     public int getCameraId() {
         return cameraId;

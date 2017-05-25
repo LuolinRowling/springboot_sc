@@ -56,7 +56,22 @@ public class AssignDeviceController {
         for(int i = 0;i < deviceInfoList.size();i++){
             System.out.println(deviceInfoList.get(i).getId());
             List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfoList.get(i).getId());
+
+            for(Camera camera:cameraList){
+                CameraType cameraType = cameraTypeService.selectById(camera.getCameraTypeId());
+                camera.setCameraTypeName(cameraType.getCameraTypeName());
+            }
+
+            SinglechipType singlechipType = singlechipTypeService.selectById(deviceInfoList.get(i).getSinglechipTypeId());
+            RaspberryType raspberryType = raspberryTypeService.selectById(deviceInfoList.get(i).getRaspberryTypeId());
+            ComputerType computerType = computerTypeService.selectById(deviceInfoList.get(i).getComputerTypeId());
+            ProjectorType projectorType = projectorTypeService.selectById(deviceInfoList.get(i).getProjectorTypeId());
+
             deviceInfoList.get(i).setCameraList(cameraList);
+            deviceInfoList.get(i).setSinglechipType(singlechipType);
+            deviceInfoList.get(i).setRaspberryType(raspberryType);
+            deviceInfoList.get(i).setComputerType(computerType);
+            deviceInfoList.get(i).setProjectorType(projectorType);
 
             jsonArray.add(deviceInfoList.get(i));
             jsonData.put("deviceInfoList",jsonArray);
