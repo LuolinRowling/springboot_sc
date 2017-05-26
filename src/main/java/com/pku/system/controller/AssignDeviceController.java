@@ -277,11 +277,17 @@ public class AssignDeviceController {
 
                 Camera camera = new Camera();
 
+                List<Camera> cameraList = cameraService.selectByDeviceId(did);
+
+                for(int i=0;i<cameraList.size();i++){
+                    cameraService.deleteCamera(cameraList.get(i).getCameraId());
+                }
+
                 for(int i=0;i<deviceInfo.getCameraList().size();i++) {
                     camera.setCameraTypeId(deviceInfo.getCameraList().get(i).getCameraTypeId());
                     camera.setCameraAngle(deviceInfo.getCameraList().get(i).getCameraAngle());
                     camera.setDid(did);
-                    cameraService.updateCamera(camera);
+                    cameraService.addCamera(camera);
                 }
                 //修改成功
                 jsonData.put("judge","0");
