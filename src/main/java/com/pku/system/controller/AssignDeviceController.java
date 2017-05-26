@@ -263,9 +263,6 @@ public class AssignDeviceController {
         }else if(deviceInfo.getClassroomNum().length()==0){
             //判断教室号是否为空
             jsonData.put("judge","-2");
-        }else if(deviceInfoService.selectByBuildingClassroom(deviceInfo.getBuildingNum(),deviceInfo.getClassroomNum())!=null){
-            //判断同一个教学楼的教室是否已经分配设备
-            jsonData.put("judge","-3");
         }else if(deviceInfoService.selectById(did) == null){
             jsonData.put("judge","-4");
         }else{
