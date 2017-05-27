@@ -1,6 +1,8 @@
 package com.pku.system.controller;
 
+import com.pku.system.model.Role;
 import com.pku.system.model.User;
+import com.pku.system.service.RoleService;
 import com.pku.system.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +23,9 @@ public class LoginController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    RoleService roleService;
+
     @ApiOperation(value = "注册", notes = "注册notes", produces = "application/json")
     @RequestMapping(value="/login",method = RequestMethod.GET)
     @ResponseBody
@@ -32,11 +37,16 @@ public class LoginController {
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
+
+        User userComplete = userService.selectByName(user.getUsername());
+        Role role = roleService.selectById(userComplete.getR_id());
+        userComplete.setRole(role);
+
         if(loginType){
             //如果验证通过,则将用户信息传到前台
-            request.setAttribute("user",user);
-            request.getSession().setAttribute("user",user);
-            jsonData.put("user",user);
+            request.setAttribute("user",userComplete);
+            request.getSession().setAttribute("user",userComplete);
+            jsonData.put("user",userComplete);
             jsonData.put("judge","0");
         }else{
             jsonData.put("judge","-1");

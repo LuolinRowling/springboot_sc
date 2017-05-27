@@ -36,6 +36,8 @@ public class NewWebSocket {
     public static List<WSocketMessage> wSocketMessageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> wSocketMessageListCenter = new ArrayList<WSocketMessage>();
 
+    public static Map<String,String> messageMap = new HashMap<String,String>();
+
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     // 若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
     private static ConcurrentHashMap<String, HashMap<String, NewWebSocket>> webSocketHashMap = new ConcurrentHashMap<String, HashMap<String, NewWebSocket>>();
@@ -154,6 +156,7 @@ public class NewWebSocket {
 //            cameraService.updateCamera(camera);
 //        }
         DeviceMonitorController.messageMap.put(sid,msg);
+        //messageMap.put(sid,msg);
         VideoController.messageMap.put(sid,msg);
 
         sendDeviceMessageToOne(time.getCurrentTime(),ownId,"receive");
@@ -201,7 +204,7 @@ public class NewWebSocket {
                             "  \"code\": 0,\n" +
                             "  \"msg\": \"success\",\n" +
                             "  \"data\": {\n" +
-                            "    \"id\":" + id+ ",\n" +
+                            "    \"id\":\"" + id+ "\",\n" +
                             "    \"message\":\"" + message + "\"\n" +
                             "  }\n" +
                             "}");
@@ -225,8 +228,8 @@ public class NewWebSocket {
                         "  \"code\": 0,\n" +
                         "  \"msg\": \"success\",\n" +
                         "  \"data\": {\n" +
-                        "    \"id\":" + id+ ",\n" +
-                        "    \"ownId\":" + ownId + ",\n" +
+                        "    \"id\":\"" + id+ "\",\n" +
+                        "    \"ownId\":\"" + ownId + "\",\n" +
                         "    \"message\":\"" + message + "\"\n" +
                         "  }\n" +
                         "}");
@@ -250,7 +253,7 @@ public class NewWebSocket {
                         "  \"code\": 0,\n" +
                         "  \"msg\": \"success\",\n" +
                         "  \"data\": {\n" +
-                        "    \"id\":" + id+ ",\n" +
+                        "    \"id\":\"" + id+ "\",\n" +
                         "    \"address\":\"" + address + "\",\n" +
                         "    \"message\":\"" + message + "\"\n" +
                         "  }\n" +
