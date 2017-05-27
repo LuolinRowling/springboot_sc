@@ -10,7 +10,6 @@ public class DeviceInfo {
     private int singlechipStatus;
     private int raspberryTypeId;
     private int raspberryStatus;
-    private String raspberryCode;
     private int raspberryStreamStatus;
     private int cameraStatus;
     private int computerTypeId;
@@ -48,14 +47,6 @@ public class DeviceInfo {
 
     public void setRaspberryStreamStatus(int raspberryStreamStatus) {
         this.raspberryStreamStatus = raspberryStreamStatus;
-    }
-
-    public String getRaspberryCode() {
-        return raspberryCode;
-    }
-
-    public void setRaspberryCode(String raspberryCode) {
-        this.raspberryCode = raspberryCode;
     }
 
     public int getSinglechipStatus() {

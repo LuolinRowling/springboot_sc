@@ -35,6 +35,8 @@ public class DeviceMonitorController {
     CameraService cameraService;
 
     WSocketMessage wSocketMessage = new WSocketMessage();
+
+    WSocketMessage wSocketMessageReturn = new WSocketMessage();
     Time time = new Time();
 
     DeviceInfo deviceInfo;
@@ -101,22 +103,20 @@ public class DeviceMonitorController {
         String orderOpen = Constant.OPEN+"_"+device;
         String orderClose = Constant.CLOSE+"_"+device;
 
-//        String id = time.getCurrentTime();
-        String id = "201705191437450023";
+        String id = time.getCurrentTime();
+        //String id = "201705191437450023";
 
         if(device.length()!=0 && !device.equals("camera")){//操作单个设备，不包含摄像头
             System.out.println(id);
-            nbs.sendDeviceMessageToOne(id,deviceInfo.getRaspberryCode(),
+            nbs.sendDeviceMessageToOne(id,deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),
                     operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
         }else{
             //根据前端返回的信息，判断是开启全部，还是关闭全部
-            nbs.sendDeviceMessageToOne(id,deviceInfo.getRaspberryCode(),
+            nbs.sendDeviceMessageToOne(id,deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),
                     operation.equals("open")?Constant.OPENALL:Constant.CLOSEALL);
         }
 
-        //dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
-
-        //String msg = messageMap.get(id);
+        dealMessage.addMessageList(deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
 
         while(true){
             if(messageMap.get(id) == null){
@@ -128,7 +128,7 @@ public class DeviceMonitorController {
 
                     //解析设备管理
                     if(messageMap.get(id).contains("open")||messageMap.get(id).contains("close")){
-                        dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getRaspberryCode(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
+                        wSocketMessageReturn = dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
                     }
 
                     deviceInfoService.updateDeviceInfoStatus(deviceInfo);
@@ -138,6 +138,7 @@ public class DeviceMonitorController {
                     }
 
                     deviceInfo.setCameraList(cameraList);
+                    jsonData.put("wSocketMessage",wSocketMessageReturn);
                     jsonData.put("deviceInfo",deviceInfo);
 
                     //修改成功
@@ -175,16 +176,16 @@ public class DeviceMonitorController {
 
         NewWebSocket nbs = new NewWebSocket();
 
-        //String id = time.getCurrentTime();
-        String id = "201705191437450023";
+        String id = time.getCurrentTime();
+        //String id = "201705191437450023";
 
         String orderOpen = Constant.OPEN+"_camera_"+code;
         String orderClose = Constant.CLOSE+"_camera_"+code;
 
-        nbs.sendDeviceMessageToOne(id,deviceInfo.getRaspberryCode(),
+        nbs.sendDeviceMessageToOne(id,deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),
                 operation.equals("close")?orderClose:orderOpen);//在线时，可以将设备关闭；离线或异常时，可开启
 
-        //dealMessage.addMessageList(deviceInfo.getRaspberryCode(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
+        dealMessage.addMessageList(deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
 
         //String msg = messageMap.get(id);
 
@@ -194,7 +195,7 @@ public class DeviceMonitorController {
             }else{
                 try{
                     String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
-                    dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getRaspberryCode(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
+                    wSocketMessageReturn = dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
 
                     deviceInfoService.updateDeviceInfoStatus(deviceInfo);
 
@@ -204,6 +205,7 @@ public class DeviceMonitorController {
 
                     deviceInfo.setCameraList(cameraList);
 
+                    jsonData.put("wSocketMessage",wSocketMessageReturn);
                     jsonData.put("deviceInfo",deviceInfo);
                     //修改成功
                     jsonData.put("judge","0");
@@ -231,14 +233,14 @@ public class DeviceMonitorController {
 
         deviceInfoList = deviceInfoService.getAllDeviceInfoStatus();
 
-        //String id = time.getCurrentTime();
-        String id = "201705191437450023";
+        String id = time.getCurrentTime();
+        //String id = "201705191437450023";
 
         for(int i=0;i<deviceInfoList.size();i++){
-            nbs.sendDeviceMessageToOne(id,deviceInfoList.get(i).getRaspberryCode(),
+            nbs.sendDeviceMessageToOne(id,deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum(),
                     operation.equals("open")?Constant.OPENALL:Constant.CLOSEALL);
             //System.out.println("test");
-            //dealMessage.addMessageList(deviceInfoList.get(i).getRaspberryCode(),deviceInfoList.get(i).getBuildingNum()+deviceInfoList.get(i).getClassroomNum(),messageList,deviceInfoList.get(i),messageListCenter);
+            dealMessage.addMessageList(deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum(),deviceInfoList.get(i).getBuildingNum()+deviceInfoList.get(i).getClassroomNum(),messageList,deviceInfoList.get(i),messageListCenter);
         }
 
         //String msg = messageMap.get(id);
@@ -252,7 +254,7 @@ public class DeviceMonitorController {
                     for(int i=0;i<deviceInfoList.size();i++){
                         List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfoList.get(i).getId());
 
-                        dealMessage.deviceOperation(msgp,deviceInfoList.get(i),messageMap.get(id),deviceInfoList.get(i).getRaspberryCode(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
+                        dealMessage.deviceOperation(msgp,deviceInfoList.get(i),messageMap.get(id),deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
 
                         deviceInfoService.updateDeviceInfoStatus(deviceInfoList.get(i));
 
