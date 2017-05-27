@@ -83,7 +83,6 @@ public class VideoController {
         JSONObject jsonData = new JSONObject();
 
         String id = time.getCurrentTime();
-        //String id = "201705191437450023";
 
         System.out.println(did+" "+operation);
         deviceInfo = deviceInfoService.selectById(did);
@@ -137,31 +136,31 @@ public class VideoController {
 
         while(true){
             if(messageMap.get(id) == null){
-                //System.out.println(id);
                 continue;
             }else{
                 try{
                     String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
 
                     if(messageMap.get(id).contains("broadcast")){
-                        dealMessage.streamOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+                        wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfo,deviceInfoStreamList,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+
                         for(int i=0;i<deviceInfoStreamList.size();i++){
-                            wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoStreamList.get(i),messageMap.get(id),deviceInfoStreamList.get(i).getBuildingNum()+"_"+deviceInfoStreamList.get(i).getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
                             deviceInfoService.updateDeviceInfoStatus(deviceInfoStreamList.get(i));
                         }
+
+                        deviceInfoService.updateDeviceInfoStatus(deviceInfo);
                         List<DeviceInfo> deviceInfoList = deviceInfoService.getAllDeviceInfoStatus();
+                        jsonData.put("wSocketMessage",wSocketMessageReturn);
                         jsonData.put("deviceInfoList",deviceInfoList);
 
                     }else{
                         if(messageMap.get(id).contains("push")||messageMap.get(id).contains("pull")){
-                            wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+                            wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfo,null,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
                             jsonData.put("wSocketMessage",wSocketMessageReturn);
                             jsonData.put("deviceInfo",deviceInfo);
+                            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
                         }
                     }
-
-                    deviceInfoService.updateDeviceInfoStatus(deviceInfo);
-
 
                     //修改成功
                     jsonData.put("judge","0");
@@ -191,12 +190,21 @@ public class VideoController {
 
 
         List<DeviceInfo> pushList = deviceInfoService.getAllPushBuildingList(3);
-        jsonData.put("buildingList",pushList);
 
+        if(pushList.size() != 0){
+            List<DeviceInfo> classroomList = deviceInfoService.getAllPushClassroomList(pushList.get(0).getBuildingNum(),3);
+            if(classroomList.size() !=0){
+                jsonData.put("buildingList",pushList);
+                jsonData.put("classroomList",classroomList);
+            }else{
+                //不存在正在推流的教学楼教室
+                jsonData.put("judge",-1);
+            }
 
-        List<DeviceInfo> classroomList = deviceInfoService.getAllPushClassroomList(pushList.get(0).getBuildingNum(),3);
-        jsonData.put("classroomList",classroomList);
-
+        }else{
+            //不存在正在推流的教学楼教室
+            jsonData.put("judge",-1);
+        }
         jsonObject.put("data",jsonData);
         return jsonObject.toString();
     }
@@ -242,7 +250,6 @@ public class VideoController {
         JSONObject jsonData = new JSONObject();
 
         String id = time.getCurrentTime();
-        //String id = "201705191437450023";
 
         System.out.println(did+" "+buildingNum+" "+classroomNum);
         deviceInfoPull = deviceInfoService.selectById(did);
@@ -281,7 +288,7 @@ public class VideoController {
                 try{
                     String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
 
-                    wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoPull,messageMap.get(id),deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+                    wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoPull,null,messageMap.get(id),deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
 
                     deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
 
@@ -351,7 +358,6 @@ public class VideoController {
         JSONArray jsonArray = new JSONArray();
 
         String id = time.getCurrentTime();
-        //String id = "201705191437450023";
 
         System.out.println(pullInfo.getPullList().toString()+" "+pullInfo.getBuildingNum()+" "+pullInfo.getClassroomNum());
 
@@ -398,7 +404,7 @@ public class VideoController {
                         String[] pullInfoArray = res.split(";");
                         deviceInfoPull = deviceInfoService.selectByBuildingClassroom(pullInfoArray[0],pullInfoArray[1]);//获得选择拉流的教室信息
 
-                        wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoPull,messageMap.get(id),deviceInfoPull.getBuildingNum()+deviceInfoPull.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+                        wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoPull,null,messageMap.get(id),deviceInfoPull.getBuildingNum()+deviceInfoPull.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
 
                         jsonArray.add(deviceInfoPull);
                         deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
@@ -465,7 +471,6 @@ public class VideoController {
         JSONObject jsonData = new JSONObject();
 
         String id = time.getCurrentTime();
-        //String id = "201705191437450023";
 
         System.out.println(did+" "+code+" "+direction);
 
