@@ -320,7 +320,7 @@ public class DeviceMonitorController {
         jsonData.put("deviceInfoList",deviceInfoListCur);
         jsonObject.put("data",jsonData);
         return jsonObject.toString();
-        
+
 
     }
 
