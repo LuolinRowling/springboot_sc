@@ -260,7 +260,7 @@ public class VideoController {
         dealMessage.addMessageList(deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(),deviceInfoPull.getBuildingNum()+deviceInfoPull.getClassroomNum(),messageList,deviceInfoPull,messageListCenter);
 
         try {
-            Thread.sleep(6*1000);//睡眠3s
+            Thread.sleep(6*1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

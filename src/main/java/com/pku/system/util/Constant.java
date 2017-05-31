@@ -47,15 +47,8 @@ public class Constant {
     public static String FAILPULLTIMEOUT = "连接超时，导致拉流失败";
     public static String FAILSTOPPULL = "停止拉流失败";
 
-    public static String PUSHHEADER = "rtmp://media.mytorchwood.com/publish/";
-    public static String PUSHFOOTER = "?auth=32578623-f138-479b-923b-87a381cddd84";
-    public static String PULLHEADER = "rtmp://media.mytorchwood.com/live/";
-    public static String PULLFOOTER = "?auth=371ac5fa-2634-4652-95e5-016b7f79b0c8";
-
-    public static String PUSHHEADERBAIDU = "rtmp://push.bcelive.com/live/";
-    public static String PULLHEADERBAIDU = "rtmp://play.bcelive.com/live/";
-
     public static String STREAMADDRESS = "rtmp://video.airforceuav.com:1935/live/";
 
     public static long MESSAGETIMEOUT = 60*1000;
+    public static long MESSAGETIMEOUTBROADCAST = 120*1000;
 }

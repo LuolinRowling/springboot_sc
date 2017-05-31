@@ -5,9 +5,8 @@ package com.pku.system.controller;
 import com.pku.system.model.WSocketMessage;
 import com.pku.system.service.CameraService;
 import com.pku.system.service.DeviceInfoService;
-import com.pku.system.util.DealMessage;
-import com.pku.system.util.ParseData;
-import com.pku.system.util.Time;
+import com.pku.system.util.*;
+import com.pku.system.util.TimerTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +34,6 @@ public class NewWebSocket {
 
     public static List<WSocketMessage> wSocketMessageList = new ArrayList<WSocketMessage>();
     public static List<WSocketMessage> wSocketMessageListCenter = new ArrayList<WSocketMessage>();
-
-    public static Map<String,String> messageMap = new HashMap<String,String>();
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     // 若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
@@ -78,22 +75,7 @@ public class NewWebSocket {
      */
     @OnClose
     public void onClose(){
-        //测试超时
-//        HashMap<String, NewWebSocket> hashMap = new HashMap<String, NewWebSocket>();
-//        hashMap.put(session.getId(),this);
-//        String code = getKey(webSocketHashMap,hashMap);
-//        DeviceInfo deviceInfo = deviceInfoService.selectByRaspberryCode(code);
-//
-//        if(deviceInfo.getRaspberryStreamStatus()!=0){
-//            deviceInfo.setRaspberryStatus(0);//并将树莓派状态置为异常
-//            deviceInfo.setRaspberryStreamStatus(0);
-//            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
-//            dealMessage.addMessageList("offline","all","树莓派关闭",code,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),NewWebSocket.wSocketMessageList,deviceInfo,NewWebSocket.wSocketMessageListCenter);
-//
-//        }
-//        System.out.println(webSocketHashMap);
         delUserWebSocket(ownId, this.session.getId());
-        //webSocketSet.remove(this);  //从set中删除
         subOnlineCount();           //在线数减1
         System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
         System.out.println(webSocketHashMap);
@@ -114,15 +96,9 @@ public class NewWebSocket {
 
         String sid = data.sid;
         String msg = data.smessage;
-        String[] msgp = msg.split("_");//字符串截取
-
-        //DeviceInfo deviceInfo = deviceInfoService.selectByRaspberryCode(ownId);
-
-        //List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfo.getId());//根据did获得所有摄像头
 
         List<WSocketMessage> list = DeviceMonitorController.messageList;
         List<WSocketMessage> videoList = VideoController.messageList;
-        //System.out.println("list size0:"+videoList.size());
         for(int i=0;i<list.size();i++){
             if(list.get(i).getOwnId().equals(ownId))
             {
@@ -137,27 +113,9 @@ public class NewWebSocket {
                 i--;
             }
         }
-        //System.out.println("list size1:"+videoList.size());
-
-//        deviceInfo.setRaspberryStatus(1);//并将树莓派状态置为在线
-//        deviceInfo.setRaspberryStreamStatus(1);//在线，空闲
-//
-//        //解析设备管理
-//        if(msg.contains("open")||msg.contains("close")){
-//            dealMessage.deviceOperation(msgp,deviceInfo,msg,ownId,wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
-//        }
-//        //解析推拉流
-//        if(msg.contains("push")||msg.contains("pull")){
-//            dealMessage.streamOperation(msgp,deviceInfo,msg,ownId,wSocketMessageList,wSocketMessageListCenter);
-//        }
-//
-//        deviceInfoService.updateDeviceInfoStatus(deviceInfo);
-//        for(Camera camera:cameraList){
-//            cameraService.updateCamera(camera);
-//        }
         DeviceMonitorController.messageMap.put(sid,msg);
-        //messageMap.put(sid,msg);
         VideoController.messageMap.put(sid,msg);
+        TimerTask.messageMap.put(sid,msg);
 
         sendDeviceMessageToOne(time.getCurrentTime(),ownId,"receive");
     }
@@ -169,21 +127,6 @@ public class NewWebSocket {
      */
     @OnError
     public void onError(Session session, Throwable error){
-
-//        //超时处理
-//        HashMap<String, NewWebSocket> hashMap = new HashMap<String, NewWebSocket>();
-//        hashMap.put(session.getId(),this);
-//        String code = getKey(webSocketHashMap,hashMap);
-//        DeviceInfo deviceInfo = deviceInfoService.selectByRaspberryCode(code);
-//
-//        if(deviceInfo.getRaspberryStreamStatus()!=2){
-//            deviceInfo.setRaspberryStatus(2);//并将树莓派状态置为异常
-//            deviceInfo.setRaspberryStreamStatus(2);
-//            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
-//            dealMessage.addMessageList("timeout","all","树莓派超时",code,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),NewWebSocket.wSocketMessageList,deviceInfo,NewWebSocket.wSocketMessageListCenter);
-//
-//        }
-
         System.out.println("发生错误");
         error.printStackTrace();
     }
@@ -309,19 +252,6 @@ public class NewWebSocket {
 
     public static synchronized void subOnlineCount() {
         NewWebSocket.onlineCount--;
-    }
-
-    //根据value值获取到对应的一个key值
-    public static String getKey(ConcurrentHashMap<String, HashMap<String, NewWebSocket>> webSocketHashMap,HashMap<String, NewWebSocket> hashMap){
-        String key = null;
-        //Map,HashMap并没有实现Iteratable接口.不能用于增强for循环.
-        for(String getKey: webSocketHashMap.keySet()){
-            if(webSocketHashMap.get(getKey).equals(hashMap)){
-                key = getKey;
-            }
-        }
-        return key;
-        //这个key肯定是最后一个满足该条件的key.
     }
 
 }

@@ -19,7 +19,7 @@ public class ParseData {
             smsg=servermsg.getString("msg");
             sid=servermsg.getJSONObject("data").getString("id");
             smessage=servermsg.getJSONObject("data").getString("message");
-            //System.out.println("code:"+code+" msg:"+smsg+" message:"+smessage);
+            System.out.println("code:"+code+" msg:"+smsg+" message:"+smessage);
         } catch (JSONException ex) {
             // 异常处理代码
         }

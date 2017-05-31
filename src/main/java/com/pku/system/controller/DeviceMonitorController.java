@@ -46,6 +46,8 @@ public class DeviceMonitorController {
     public static List<WSocketMessage> messageListCenter = new ArrayList<WSocketMessage>();
 
     public static Map<String,String> messageMap = new HashMap<String,String>();
+    public Map<String,String> keyMap = new HashMap<String,String>();
+
     Map<String, String> dic = new HashMap<String, String>(){{ put("camera", "摄像头"); put("computer", "电脑");put("projector", "投影仪"); }};
 
 
@@ -115,89 +117,53 @@ public class DeviceMonitorController {
 
         dealMessage.addMessageList(deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
 
-//        try {
-//            Thread.sleep(30*1000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//        if(messageMap.get(id) == null){
-//            //continue;
-//            deviceInfo.setRaspberryStatus(0);
-//            deviceInfo.setRaspberryStreamStatus(0);
-//
-//            deviceInfo.setCameraList(cameraList);
-//
-//            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
-//
-//            wSocketMessageReturn.setJudge("offline");
-//            wSocketMessageReturn.setMessage("树莓派离线");
-//
-//        }else{
-//            try{
-//                String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
-//
-//                //解析设备管理
-//                if(messageMap.get(id).contains("open")||messageMap.get(id).contains("close")){
-//                    wSocketMessageReturn = dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
-//                }
-//
-//                deviceInfoService.updateDeviceInfoStatus(deviceInfo);
-//
-//                for(Camera camera:cameraList){
-//                    cameraService.updateCamera(camera);
-//                }
-//
-//                deviceInfo.setCameraList(cameraList);
-//
-//                //修改成功
-//                jsonData.put("judge","0");
-//            }catch (DataAccessException e){
-//                //修改失败
-//                jsonData.put("judge","-9");
-//            }
-//        }
-//
-//        jsonData.put("wSocketMessage",wSocketMessageReturn);
-//        jsonData.put("deviceInfo",deviceInfo);
-//
-//        jsonObject.put("data",jsonData);
-//        return jsonObject.toString();
+        try {
+            Thread.sleep(Constant.MESSAGETIMEOUT);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        while(true){
-            if(messageMap.get(id) == null){
-                //System.out.println(id);
-                continue;
-            }else{
-                try{
-                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+        if(messageMap.get(id) == null){
+            deviceInfo.setRaspberryStatus(0);
+            deviceInfo.setRaspberryStreamStatus(0);
 
-                    //解析设备管理
-                    if(messageMap.get(id).contains("open")||messageMap.get(id).contains("close")){
-                        wSocketMessageReturn = dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
-                    }
+            deviceInfo.setCameraList(cameraList);
 
-                    deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
 
-                    for(Camera camera:cameraList){
-                        cameraService.updateCamera(camera);
-                    }
+            wSocketMessageReturn.setJudge("offline");
+            wSocketMessageReturn.setMessage("树莓派离线");
 
-                    deviceInfo.setCameraList(cameraList);
-                    jsonData.put("wSocketMessage",wSocketMessageReturn);
-                    jsonData.put("deviceInfo",deviceInfo);
+        }else{
+            try{
+                String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
 
-                    //修改成功
-                    jsonData.put("judge","0");
-                }catch (DataAccessException e){
-                    //修改失败
-                    jsonData.put("judge","-9");
+                //解析设备管理
+                if(messageMap.get(id).contains("open")||messageMap.get(id).contains("close")){
+                    wSocketMessageReturn = dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
                 }
 
-                jsonObject.put("data",jsonData);
-                return jsonObject.toString();
+                deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+
+                for(Camera camera:cameraList){
+                    cameraService.updateCamera(camera);
+                }
+
+                deviceInfo.setCameraList(cameraList);
+
+                //修改成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
             }
         }
+
+        jsonData.put("wSocketMessage",wSocketMessageReturn);
+        jsonData.put("deviceInfo",deviceInfo);
+
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
 
 
     }
@@ -233,35 +199,48 @@ public class DeviceMonitorController {
 
         dealMessage.addMessageList(deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),messageList,deviceInfo,messageListCenter);
 
-        while(true){
-            if(messageMap.get(id) == null){
-                continue;
-            }else{
-                try{
-                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
-                    wSocketMessageReturn = dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
+        try {
+            Thread.sleep(Constant.MESSAGETIMEOUT);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-                    deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+        if(messageMap.get(id) == null){
+            deviceInfo.setRaspberryStatus(0);
+            deviceInfo.setRaspberryStreamStatus(0);
 
-                    for(Camera camera:cameraList){
-                        cameraService.updateCamera(camera);
-                    }
+            deviceInfo.setCameraList(cameraList);
 
-                    deviceInfo.setCameraList(cameraList);
+            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
 
-                    jsonData.put("wSocketMessage",wSocketMessageReturn);
-                    jsonData.put("deviceInfo",deviceInfo);
-                    //修改成功
-                    jsonData.put("judge","0");
+            wSocketMessageReturn.setMessage("树莓派离线");
+            wSocketMessageReturn.setJudge("offline");
+        }else{
+            try{
+                String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+                wSocketMessageReturn = dealMessage.deviceOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
+
+                deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+
+                for(Camera camera:cameraList){
+                    cameraService.updateCamera(camera);
                 }
-                catch (DataAccessException e){
-                    jsonData.put("judge","-9");
-                }
 
-                jsonObject.put("data",jsonData);
-                return jsonObject.toString();
+                deviceInfo.setCameraList(cameraList);
+
+                //修改成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
             }
         }
+
+        jsonData.put("wSocketMessage",wSocketMessageReturn);
+        jsonData.put("deviceInfo",deviceInfo);
+
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
     }
 
     @ApiOperation(value = "发消息修改全部教室设备状态", notes = "发消息修改全部教室设备状态notes", produces = "application/json")
@@ -270,7 +249,6 @@ public class DeviceMonitorController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
-        JSONArray jsonArray = new JSONArray();
         JSONObject jsonData = new JSONObject();
 
         NewWebSocket nbs = new NewWebSocket();
@@ -280,43 +258,69 @@ public class DeviceMonitorController {
         String id = time.getCurrentTime();
 
         for(int i=0;i<deviceInfoList.size();i++){
-            nbs.sendDeviceMessageToOne(id,deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum(),
+            nbs.sendDeviceMessageToOne(id+i,deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum(),
                     operation.equals("open")?Constant.OPENALL:Constant.CLOSEALL);
+            keyMap.put(id+i,deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum());
+
             dealMessage.addMessageList(deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum(),deviceInfoList.get(i).getBuildingNum()+deviceInfoList.get(i).getClassroomNum(),messageList,deviceInfoList.get(i),messageListCenter);
         }
 
-        while(true){
-            if(messageMap.get(id) == null){
-                continue;
-            }else{
-                try{
-                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
-                    for(int i=0;i<deviceInfoList.size();i++){
-                        List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfoList.get(i).getId());
+        try {
+            Thread.sleep(Constant.MESSAGETIMEOUTBROADCAST);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-                        dealMessage.deviceOperation(msgp,deviceInfoList.get(i),messageMap.get(id),deviceInfoList.get(i).getBuildingNum()+"_"+deviceInfoList.get(i).getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
+        for(int i=0;i<deviceInfoList.size();i++){
+            if(messageMap.get(id+i) != null){
+                String[] msgp = messageMap.get(id+i).split("_");//树莓派返回消息字符串截取
+                String[] bc = keyMap.get(id+i).split("_");
+                DeviceInfo deviceInfoCur = deviceInfoService.selectByBuildingClassroom(bc[0],bc[1]);
 
-                        deviceInfoService.updateDeviceInfoStatus(deviceInfoList.get(i));
+                List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfoCur.getId());
 
-                        for(Camera camera:cameraList){
-                            cameraService.updateCamera(camera);
-                        }
+                dealMessage.deviceOperation(msgp,deviceInfoCur,messageMap.get(id+i),deviceInfoCur.getBuildingNum()+"_"+deviceInfoCur.getClassroomNum(),wSocketMessageList,dic,wSocketMessageListCenter,cameraList);
 
-                        deviceInfoList.get(i).setCameraList(cameraList);
-                        jsonArray.add(deviceInfoList.get(i));
-                        jsonData.put("deviceInfoList",jsonArray);
-                    }
-                    jsonData.put("judge","0");
+                deviceInfoService.updateDeviceInfoStatus(deviceInfoCur);
+
+                for(Camera camera:cameraList){
+                    cameraService.updateCamera(camera);
                 }
-                catch (DataAccessException e){
-                    jsonData.put("judge","-9");
-                }
+                deviceInfoCur.setCameraList(cameraList);
 
-                jsonObject.put("data",jsonData);
-                return jsonObject.toString();
-
+                keyMap.remove(id+i);//删除已处理的教学楼教室
             }
         }
+
+        //对未返回消息的教学楼教室作离线处理
+        for(int i=0;i<deviceInfoList.size();i++){
+            if(keyMap.get(id+i) !=null){
+                String[] bc = keyMap.get(id+i).split("_");
+                DeviceInfo deviceInfoCur = deviceInfoService.selectByBuildingClassroom(bc[0],bc[1]);
+                List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfoCur.getId());
+
+                deviceInfoCur.setRaspberryStatus(2);
+                deviceInfoCur.setRaspberryStreamStatus(2);
+
+                deviceInfoCur.setCameraList(cameraList);
+
+                deviceInfoService.updateDeviceInfoStatus(deviceInfoCur);
+                System.out.println(deviceInfoCur.getRaspberryStatus());
+
+            }
+
+        }
+
+        List<DeviceInfo> deviceInfoListCur = deviceInfoService.getAllDeviceInfoStatus();
+        for(int i=0;i<deviceInfoListCur.size();i++){
+            List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfoListCur.get(i).getId());
+            deviceInfoListCur.get(i).setCameraList(cameraList);
+        }
+
+        jsonData.put("deviceInfoList",deviceInfoListCur);
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
+        
 
     }
 

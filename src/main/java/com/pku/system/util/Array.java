@@ -1,9 +1,7 @@
 package com.pku.system.util;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Array {
     //求两个数组的差集
