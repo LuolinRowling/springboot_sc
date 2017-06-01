@@ -38,9 +38,9 @@ public class TimerTask {
     }
 
     /**
-     * 每8个小时启动任务
+     * 每30min启动任务
      */
-    @Scheduled(cron = "0 0 */8 * * ?")
+    @Scheduled(cron = "0 */30 * * * ?")
     public void detect()
     {
         String id = time.getCurrentTime();
