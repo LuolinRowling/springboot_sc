@@ -301,6 +301,38 @@ public class AssignDeviceController {
         return jsonObject.toString();
     }
 
+    @ApiOperation(value = "根据id更新树莓派状态", notes = "根据id更新树莓派状态notes", produces = "application/json")
+    @RequestMapping(value="/raspberry/{did}", method=RequestMethod.PUT)
+    @ResponseBody
+    public String ajaxEditRaspberry(@PathVariable(value="did")int did){
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("msg","调用成功");
+        jsonObject.put("code","0000");
+        JSONObject jsonData = new JSONObject();
+
+        DeviceInfo deviceInfo = deviceInfoService.selectById(did);
+
+        if(deviceInfo == null){
+            jsonData.put("judge","-1");
+        }else{
+            try{
+                deviceInfo.setRaspberryStatus(1);
+                deviceInfo.setRaspberryStreamStatus(1);
+
+                deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+                //修改成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
+            }
+        }
+
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
+    }
+
     /**
      * 删除教室中的设备
      * @param did
