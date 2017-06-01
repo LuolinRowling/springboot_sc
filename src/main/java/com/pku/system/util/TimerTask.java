@@ -43,7 +43,6 @@ public class TimerTask {
     @Scheduled(cron = "0 0 */8 * * ?")
     public void detect()
     {
-        System.out.println("hahahha");
         String id = time.getCurrentTime();
 
         NewWebSocket nbs = new NewWebSocket();

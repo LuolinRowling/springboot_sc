@@ -124,15 +124,15 @@ public class DeviceMonitorController {
         }
 
         if(messageMap.get(id) == null){
-            deviceInfo.setRaspberryStatus(0);
-            deviceInfo.setRaspberryStreamStatus(0);
+            deviceInfo.setRaspberryStatus(2);
+            deviceInfo.setRaspberryStreamStatus(2);
 
             deviceInfo.setCameraList(cameraList);
 
             deviceInfoService.updateDeviceInfoStatus(deviceInfo);
 
             wSocketMessageReturn.setJudge("offline");
-            wSocketMessageReturn.setMessage("树莓派离线");
+            wSocketMessageReturn.setMessage("树莓派异常");
 
         }else{
             try{
@@ -206,14 +206,14 @@ public class DeviceMonitorController {
         }
 
         if(messageMap.get(id) == null){
-            deviceInfo.setRaspberryStatus(0);
-            deviceInfo.setRaspberryStreamStatus(0);
+            deviceInfo.setRaspberryStatus(2);
+            deviceInfo.setRaspberryStreamStatus(2);
 
             deviceInfo.setCameraList(cameraList);
 
             deviceInfoService.updateDeviceInfoStatus(deviceInfo);
 
-            wSocketMessageReturn.setMessage("树莓派离线");
+            wSocketMessageReturn.setMessage("树莓派异常");
             wSocketMessageReturn.setJudge("offline");
         }else{
             try{
@@ -275,6 +275,7 @@ public class DeviceMonitorController {
             if(messageMap.get(id+i) != null){
                 String[] msgp = messageMap.get(id+i).split("_");//树莓派返回消息字符串截取
                 String[] bc = keyMap.get(id+i).split("_");
+
                 DeviceInfo deviceInfoCur = deviceInfoService.selectByBuildingClassroom(bc[0],bc[1]);
 
                 List<Camera> cameraList = cameraService.selectByDeviceId(deviceInfoCur.getId());

@@ -50,6 +50,7 @@ public class VideoController {
     WSocketMessage wSocketMessageReturn = new WSocketMessage();
 
     public static Map<String,String> messageMap = new HashMap<String,String>();
+    public Map<String,String> keyMap = new HashMap<String,String>();
 
     @ApiOperation(value = "获得视频推拉流列表", notes = "获得视频推拉流列表notes", produces = "application/json")
     @RequestMapping(value="/", method= RequestMethod.GET)
@@ -95,28 +96,41 @@ public class VideoController {
         if(operation.contains("push")){
             nbs.sendMessageToOne(id,deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),Constant.STREAMADDRESS+deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),
                     operation.equals("start_push")?Constant.STARTPUSH:Constant.STOPTPUSH);
-        }else if(operation.contains("pull")) {//停止拉流
             try {
-                Thread.sleep(6 * 1000);//睡眠3s
+                Thread.sleep(Constant.MESSAGETIMEOUT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }else if(operation.contains("pull")) {//停止拉流
+
+            try {
+                Thread.sleep(6 * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             nbs.sendMessageToOne(id,deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(), "serverAddress", Constant.STOPTPULL);
+            try {
+                Thread.sleep(Constant.MESSAGETIMEOUT);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }else{//广播，实则为一个教室推流，其余教室拉流
             nbs.sendMessageToOne(id,deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),Constant.STREAMADDRESS+deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),
                     operation.equals("start_broadcast")?Constant.STARTPUSHBROADCAST:Constant.STOPTPUSHBROADCAST);//选择广播的教室推流
 
-            //是否需要睡眠时间，需要和安卓组商量
             try {
-                Thread.sleep(6*1000);//睡眠3s
+                Thread.sleep(6*1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             for(int i=0;i<deviceInfoStreamList.size();i++){
-                nbs.sendMessageToOne(id,deviceInfoStreamList.get(i).getBuildingNum()+"_"+deviceInfoStreamList.get(i).getClassroomNum(),Constant.STREAMADDRESS+deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),
+                nbs.sendMessageToOne(id+i,deviceInfoStreamList.get(i).getBuildingNum()+"_"+deviceInfoStreamList.get(i).getClassroomNum(),Constant.STREAMADDRESS+deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),
                         operation.equals("start_broadcast")?Constant.STARTPULL:Constant.STOPTPULL);//其余教室拉流
+                keyMap.put(id+i,deviceInfoStreamList.get(i).getBuildingNum()+"_"+deviceInfoStreamList.get(i).getClassroomNum());
 
                 PullInfo pullInfoOld = pullInfoService.selectById(deviceInfoStreamList.get(i).getId());
                 if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
@@ -132,47 +146,83 @@ public class VideoController {
 
                 dealMessage.addMessageList(deviceInfoStreamList.get(i).getBuildingNum()+"_"+deviceInfoStreamList.get(i).getClassroomNum(),deviceInfoStreamList.get(i).getBuildingNum()+deviceInfoStreamList.get(i).getClassroomNum(),messageList,deviceInfo,messageListCenter);
             }
+
+            try {
+                Thread.sleep(Constant.MESSAGETIMEOUTBROADCAST);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
-        while(true){
-            if(messageMap.get(id) == null){
-                continue;
-            }else{
-                try{
-                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+        if(messageMap.get(id) == null){
+            deviceInfo.setRaspberryStatus(2);
+            deviceInfo.setRaspberryStreamStatus(2);
 
-                    if(messageMap.get(id).contains("broadcast")){
-                        wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfo,deviceInfoStreamList,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
 
-                        for(int i=0;i<deviceInfoStreamList.size();i++){
-                            deviceInfoService.updateDeviceInfoStatus(deviceInfoStreamList.get(i));
-                        }
+            wSocketMessageReturn.setJudge("offline");
+            wSocketMessageReturn.setMessage("树莓派异常");
 
-                        deviceInfoService.updateDeviceInfoStatus(deviceInfo);
-                        List<DeviceInfo> deviceInfoList = deviceInfoService.getAllDeviceInfoStatus();
-                        jsonData.put("wSocketMessage",wSocketMessageReturn);
-                        jsonData.put("deviceInfoList",deviceInfoList);
+        }else{
+            try{
+                String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
 
-                    }else{
-                        if(messageMap.get(id).contains("push")||messageMap.get(id).contains("pull")){
-                            wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfo,null,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
-                            jsonData.put("wSocketMessage",wSocketMessageReturn);
-                            jsonData.put("deviceInfo",deviceInfo);
-                            deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+                if(messageMap.get(id).contains("broadcast")){
+                    wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+
+                    for(int i=0;i<deviceInfoStreamList.size();i++){
+                        if(messageMap.get(id+i) != null){
+                            String[] msg = messageMap.get(id+i).split("_");//树莓派返回消息字符串截取
+                            String[] bc = keyMap.get(id+i).split("_");
+                            DeviceInfo deviceInfoCur = deviceInfoService.selectByBuildingClassroom(bc[0],bc[1]);
+
+                            dealMessage.streamOperation(msg,deviceInfoCur,messageMap.get(id+i),deviceInfoCur.getBuildingNum()+"_"+deviceInfoCur.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+
+                            deviceInfoService.updateDeviceInfoStatus(deviceInfoCur);
+
+                            keyMap.remove(id+i);//删除已处理的教学楼教室
                         }
                     }
 
-                    //修改成功
-                    jsonData.put("judge","0");
-                }catch (DataAccessException e){
-                    //修改失败
-                    jsonData.put("judge","-9");
+                    //对未返回消息的教学楼教室作离线处理
+                    for(int i=0;i<deviceInfoStreamList.size();i++){
+                        if(keyMap.get(id+i) !=null){
+                            String[] bc = keyMap.get(id+i).split("_");
+                            DeviceInfo deviceInfoCur = deviceInfoService.selectByBuildingClassroom(bc[0],bc[1]);
+
+                            deviceInfoCur.setRaspberryStatus(2);
+                            deviceInfoCur.setRaspberryStreamStatus(2);
+
+                            deviceInfoService.updateDeviceInfoStatus(deviceInfoCur);
+                            System.out.println(deviceInfoCur.getRaspberryStatus());
+
+                        }
+                    }
+
+                    deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+                    List<DeviceInfo> deviceInfoList = deviceInfoService.getAllDeviceInfoStatus();
+                    jsonData.put("wSocketMessage",wSocketMessageReturn);
+                    jsonData.put("deviceInfoList",deviceInfoList);
+
+                }else{
+                    if(messageMap.get(id).contains("push")||messageMap.get(id).contains("pull")){
+                        wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfo,messageMap.get(id),deviceInfo.getBuildingNum()+"_"+deviceInfo.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+                        jsonData.put("wSocketMessage",wSocketMessageReturn);
+                        jsonData.put("deviceInfo",deviceInfo);
+                        deviceInfoService.updateDeviceInfoStatus(deviceInfo);
+                    }
                 }
 
-                jsonObject.put("data",jsonData);
-                return jsonObject.toString();
+                //修改成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
             }
         }
+
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
     }
 
     /**
@@ -279,33 +329,42 @@ public class VideoController {
             pullInfoService.addPullInfo(pullInfo);
         }
 
-        while(true){
+        try {
+            Thread.sleep(Constant.MESSAGETIMEOUT);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-            if(messageMap.get(id) == null){
-                continue;
+        if(messageMap.get(id) == null){
+            deviceInfoPull.setRaspberryStreamStatus(2);
+            deviceInfoPull.setRaspberryStatus(2);
 
-            }else{
-                try{
-                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+            deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
 
-                    wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoPull,null,messageMap.get(id),deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+            wSocketMessageReturn.setJudge("offline");
+            wSocketMessageReturn.setMessage("树莓派异常");
 
-                    deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
+        }else{
+            try{
+                String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
 
-                    jsonData.put("wSocketMessage",wSocketMessageReturn);
-                    jsonData.put("deviceInfo",deviceInfoPull);
+                wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoPull,messageMap.get(id),deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
 
-                    //修改成功
-                    jsonData.put("judge","0");
-                }catch (DataAccessException e){
-                    //修改失败
-                    jsonData.put("judge","-9");
-                }
+                deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
 
-                jsonObject.put("data",jsonData);
-                return jsonObject.toString();
+                //修改成功
+                jsonData.put("judge","0");
+            }catch (DataAccessException e){
+                //修改失败
+                jsonData.put("judge","-9");
             }
         }
+
+        jsonData.put("wSocketMessage",wSocketMessageReturn);
+        jsonData.put("deviceInfo",deviceInfoPull);
+
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
 
     }
 
@@ -347,15 +406,11 @@ public class VideoController {
     @RequestMapping(value="/multiplePullStreamStatus", method= RequestMethod.POST)
     @ResponseBody
     public String ajaxMultiplePullStreamStatus(@RequestBody PullInfo pullInfo) {
-                                        //@RequestParam(value="buildingNum")String buildingNum,
-                                        //@RequestParam(value="classroomNum")String classroomNum,
-                                        //@RequestParam(value="pullList[]")String[] pullList){
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("msg","调用成功");
         jsonObject.put("code","0000");
         JSONObject jsonData = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
 
         String id = time.getCurrentTime();
 
@@ -372,8 +427,9 @@ public class VideoController {
             dealMessage.addMessageList(deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(),deviceInfoPull.getBuildingNum()+deviceInfoPull.getClassroomNum(),messageList,deviceInfoPull,messageListCenter);
 
             try {
-                Thread.sleep(6*1000);//睡眠3s
-                nbs.sendMessageToOne(id,deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(), Constant.STREAMADDRESS+deviceInfoPush.getBuildingNum()+"_"+deviceInfoPush.getClassroomNum(),Constant.STARTPULL);
+                Thread.sleep(6*1000);
+                nbs.sendMessageToOne(id+i,deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum(), Constant.STREAMADDRESS+deviceInfoPush.getBuildingNum()+"_"+deviceInfoPush.getClassroomNum(),Constant.STARTPULL);
+                keyMap.put(id+i,deviceInfoPull.getBuildingNum()+"_"+deviceInfoPull.getClassroomNum());
 
                 PullInfo pullInfoOld = pullInfoService.selectById(deviceInfoPull.getId());
                 if(pullInfoOld!=null){//数据库中已经存在该条记录，执行更新操作
@@ -392,36 +448,47 @@ public class VideoController {
 
         }
 
-        while(true){
-            if(messageMap.get(id) == null){
-                continue;
-            }else{
-                try{
-                    String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
+        try {
+            Thread.sleep(Constant.MESSAGETIMEOUTBROADCAST);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-                    for(int i=0;i<pullInfo.getPullList().length;i++){
-                        String res = pullInfo.getPullList()[i];
-                        String[] pullInfoArray = res.split(";");
-                        deviceInfoPull = deviceInfoService.selectByBuildingClassroom(pullInfoArray[0],pullInfoArray[1]);//获得选择拉流的教室信息
+        for(int i=0;i<pullInfo.getPullList().length;i++){
+            if(messageMap.get(id+i) != null){
+                String[] bc = keyMap.get(id+i).split("_");
 
-                        wSocketMessageReturn = dealMessage.streamOperation(msgp,deviceInfoPull,null,messageMap.get(id),deviceInfoPull.getBuildingNum()+deviceInfoPull.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
+                DeviceInfo deviceInfoCur = deviceInfoService.selectByBuildingClassroom(bc[0],bc[1]);
+                String[] msgp = messageMap.get(id+i).split("_");//树莓派返回消息字符串截取
 
-                        jsonArray.add(deviceInfoPull);
-                        deviceInfoService.updateDeviceInfoStatus(deviceInfoPull);
-                    }
+                dealMessage.streamOperation(msgp,deviceInfoCur,messageMap.get(id+i),deviceInfoCur.getBuildingNum()+"_"+deviceInfoCur.getClassroomNum(),wSocketMessageList,wSocketMessageListCenter);
 
-                    //修改成功
-                    jsonData.put("judge","0");
-                    jsonData.put("deviceInfoList",jsonArray);
-                }catch (DataAccessException e){
-                    //修改失败
-                    jsonData.put("judge","-9");
-                }
+                deviceInfoService.updateDeviceInfoStatus(deviceInfoCur);
 
-                jsonObject.put("data",jsonData);
-                return jsonObject.toString();
+                keyMap.remove(id+i);//删除已处理的教学楼教室
             }
         }
+
+        //对未返回消息的教学楼教室作离线处理
+        for(int i=0;i<pullInfo.getPullList().length;i++){
+            if(keyMap.get(id+i) !=null){
+                String[] bc = keyMap.get(id+i).split("_");
+                DeviceInfo deviceInfoCur = deviceInfoService.selectByBuildingClassroom(bc[0],bc[1]);
+
+                deviceInfoCur.setRaspberryStatus(2);
+                deviceInfoCur.setRaspberryStreamStatus(2);
+
+                deviceInfoService.updateDeviceInfoStatus(deviceInfoCur);
+
+            }
+
+        }
+
+        List<DeviceInfo> deviceInfoListCur = deviceInfoService.getAllDeviceInfoStatus();
+
+        jsonData.put("deviceInfoList",deviceInfoListCur);
+        jsonObject.put("data",jsonData);
+        return jsonObject.toString();
     }
 
     /**

@@ -251,7 +251,7 @@ public class DealMessage {
      * @param wSocketMessageList
      * @param wSocketMessageListCenter
      */
-    public WSocketMessage streamOperation(String[] msgp, DeviceInfo deviceInfo,List<DeviceInfo> deviceInfoStreamList,String msg, String ownId, List<WSocketMessage> wSocketMessageList, List<WSocketMessage> wSocketMessageListCenter){
+    public WSocketMessage streamOperation(String[] msgp, DeviceInfo deviceInfo,String msg, String ownId, List<WSocketMessage> wSocketMessageList, List<WSocketMessage> wSocketMessageListCenter){
         WSocketMessage wSocketMessage = new WSocketMessage();
         //处理推拉流
         if(msgp[0].equals("start")){
@@ -260,10 +260,6 @@ public class DealMessage {
                 addMessageList("success","video","开始广播",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                 wSocketMessage = addMessageList("success","开始广播");
                 deviceInfo.setRaspberryStreamStatus(5);//正在广播
-
-                for(int i=0;i<deviceInfoStreamList.size();i++){
-                    deviceInfoStreamList.get(i).setRaspberryStreamStatus(4);//开始拉流
-                }
 
             }else{
                 //start_push,start_pull
@@ -276,10 +272,6 @@ public class DealMessage {
                 addMessageList("success","video",msg.contains("stop")?"广播结束":"广播成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                 wSocketMessage = addMessageList("success",msg.contains("stop")?"广播结束":"广播成功");
                 deviceInfo.setRaspberryStreamStatus(1);
-
-                for(int i=0;i<deviceInfoStreamList.size();i++){
-                    deviceInfoStreamList.get(i).setRaspberryStreamStatus(1);
-                }
             }
             if(msgp.length==2){//success_push,success_pull
                 addMessageList("success","video",msg.contains("push")?"推流成功":"拉流成功",ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
@@ -298,9 +290,6 @@ public class DealMessage {
                     addMessageList("fail","video",Constant.FAILSTOPPUSHBROADCAST,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",Constant.FAILSTOPPUSHBROADCAST);
                     deviceInfo.setRaspberryStreamStatus(5);//停止广播失败，则把树莓派状态置为正在广播
-                    for(int i=0;i<deviceInfoStreamList.size();i++){
-                        deviceInfoStreamList.get(i).setRaspberryStreamStatus(4);//开始拉流
-                    }
                 }else{
                     addMessageList("fail","video",msg.contains("push")?Constant.FAILSTOPPUSH:Constant.FAILSTOPPULL,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",msg.contains("push")?Constant.FAILSTOPPUSH:Constant.FAILSTOPPULL);
@@ -313,9 +302,6 @@ public class DealMessage {
                     addMessageList("fail","video",Constant.FAILPUSHBROADCASTDISCONNECTSERVER,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",Constant.FAILPUSHBROADCASTDISCONNECTSERVER);
                     deviceInfo.setRaspberryStreamStatus(1);
-                    for(int i=0;i<deviceInfoStreamList.size();i++){
-                        deviceInfoStreamList.get(i).setRaspberryStreamStatus(1);
-                    }
                 }else{
                     addMessageList("fail","video",msg.contains("push")?Constant.FAILPUSHDISCONNECTSERVER:Constant.FAILPULLDISCONNECTSERVER,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",msg.contains("push")?Constant.FAILPUSHDISCONNECTSERVER:Constant.FAILPULLDISCONNECTSERVER);
@@ -338,9 +324,6 @@ public class DealMessage {
                     addMessageList("fail","video",Constant.FAILPUSHBROADCASTSERVER,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",Constant.FAILPUSHBROADCASTSERVER);
                     deviceInfo.setRaspberryStreamStatus(1);
-                    for(int i=0;i<deviceInfoStreamList.size();i++){
-                        deviceInfoStreamList.get(i).setRaspberryStreamStatus(1);
-                    }
                 }else{
                     addMessageList("fail","video",msg.contains("push")?Constant.FAILPUSHSERVER:Constant.FAILPULLSERVER,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",msg.contains("push")?Constant.FAILPUSHSERVER:Constant.FAILPULLSERVER);
@@ -352,9 +335,6 @@ public class DealMessage {
                     addMessageList("fail","video",Constant.FAILPUSHBROADCASTWEAKCONNECT,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",Constant.FAILPUSHBROADCASTWEAKCONNECT);
                     deviceInfo.setRaspberryStreamStatus(1);
-                    for(int i=0;i<deviceInfoStreamList.size();i++){
-                        deviceInfoStreamList.get(i).setRaspberryStreamStatus(1);
-                    }
                 }else{
                     addMessageList("fail","video",msg.contains("push")?Constant.FAILPUSHWEAKCONNECT:Constant.FAILPULLWEAKCONNECT,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",msg.contains("push")?Constant.FAILPUSHWEAKCONNECT:Constant.FAILPULLWEAKCONNECT);
@@ -366,9 +346,6 @@ public class DealMessage {
                     addMessageList("fail","video",Constant.FAILPUSHBROADCASTTIMEOUT,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",Constant.FAILPUSHBROADCASTTIMEOUT);
                     deviceInfo.setRaspberryStreamStatus(1);
-                    for(int i=0;i<deviceInfoStreamList.size();i++){
-                        deviceInfoStreamList.get(i).setRaspberryStreamStatus(1);
-                    }
                 }else{
                     addMessageList("fail","video",msg.contains("push")?Constant.FAILPUSHTIMEOUT:Constant.FAILPULLTIMEOUT,ownId,deviceInfo.getBuildingNum()+deviceInfo.getClassroomNum(),wSocketMessageList,deviceInfo,wSocketMessageListCenter);
                     wSocketMessage = addMessageList("fail",msg.contains("push")?Constant.FAILPUSHTIMEOUT:Constant.FAILPULLTIMEOUT);
