@@ -163,6 +163,9 @@ public class VideoController {
             wSocketMessageReturn.setJudge("offline");
             wSocketMessageReturn.setMessage("树莓派异常");
 
+            jsonData.put("wSocketMessage",wSocketMessageReturn);
+            jsonData.put("deviceInfo",deviceInfo);
+
         }else{
             try{
                 String[] msgp = messageMap.get(id).split("_");//树莓派返回消息字符串截取
