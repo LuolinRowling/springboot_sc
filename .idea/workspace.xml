@@ -9,16 +9,6 @@
     <list default="true" id="6a3f8cad-fb84-47e3-887c-35da04b0c910" name="Default" comment="">
       <change type="DELETED" beforePath="$PROJECT_DIR$/target/sc-1.0-SNAPSHOT.jar" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/target/sc-1.0-SNAPSHOT.jar.original" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/controller/DeviceMonitorController$1.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/controller/DeviceMonitorController$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/controller/DeviceMonitorController.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/controller/DeviceMonitorController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/controller/NewWebSocket.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/controller/NewWebSocket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/controller/VideoController.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/controller/VideoController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/util/Array.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/util/Array.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/util/Constant.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/util/Constant.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/util/DealMessage.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/util/DealMessage.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/util/ParseData.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/util/ParseData.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/com/pku/system/util/TimerTask.class" afterPath="$PROJECT_DIR$/target/classes/com/pku/system/util/TimerTask.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -47,7 +37,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="345">
@@ -103,11 +93,21 @@
       <file leaf-file-name="VideoController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/pku/system/controller/VideoController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1676">
+            <state relative-caret-position="5422">
               <caret line="451" column="12" lean-forward="false" selection-start-line="451" selection-start-column="12" selection-end-line="451" selection-end-column="12" />
               <folding>
                 <element signature="e#1951#1966#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="application.properties" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="45" lean-forward="true" selection-start-line="2" selection-start-column="45" selection-end-line="2" selection-end-column="45" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -210,7 +210,6 @@
         <option value="$PROJECT_DIR$/src/main/java/com/pku/system/controller/AssignDeviceController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/pku/system/model/DeviceInfo.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/pku/Application.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
         <option value="$PROJECT_DIR$/src/main/java/com/pku/system/controller/LoginController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/pku/system/shiro/MyRealm.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
@@ -223,6 +222,7 @@
         <option value="$PROJECT_DIR$/src/main/java/com/pku/system/util/DealMessage.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/pku/system/controller/DeviceMonitorController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/pku/system/controller/VideoController.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/application.properties" />
       </list>
     </option>
   </component>
@@ -692,7 +692,7 @@
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="FullScreen" value="true" />
-    <property name="add_unversioned_files" value="$PROJECT_DIR$/.gitignore" />
+    <property name="add_unversioned_files" value="$PROJECT_DIR$/.gitignore&#10;/Users/jiangdongyu/Documents/sc/src/main/resources/application.properties" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -1214,7 +1214,7 @@
       <workItem from="1495900425788" duration="510000" />
       <workItem from="1495900977800" duration="204000" />
       <workItem from="1496195889622" duration="18518000" />
-      <workItem from="1496281957759" duration="7919000" />
+      <workItem from="1496281957759" duration="8760000" />
     </task>
     <task id="LOCAL-00001" summary="引入shiro&#10;增加编辑设备&#10;增加消息管理&#10;增加登录注销">
       <created>1493129618104</created>
@@ -1234,7 +1234,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="315043000" />
+    <option name="totallyTimeSpent" value="315884000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -1259,7 +1259,7 @@
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3291536" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22876713" sideWeight="0.49676898" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22876713" sideWeight="0.49676898" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Spring" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16164383" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30371568" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1635,13 +1635,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/application.yml" />
-    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="57" lean-forward="false" selection-start-line="3" selection-start-column="57" selection-end-line="3" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/pku/system/controller/AssignDeviceController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="705">
@@ -1817,9 +1810,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="23" column="26" lean-forward="true" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/pku/system/controller/VideoController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1676">
+        <state relative-caret-position="5422">
           <caret line="451" column="12" lean-forward="false" selection-start-line="451" selection-start-column="12" selection-end-line="451" selection-end-column="12" />
           <folding>
             <element signature="e#1951#1966#0" expanded="true" />
@@ -1827,10 +1828,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/application.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="26" lean-forward="true" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
+        <state relative-caret-position="30">
+          <caret line="2" column="45" lean-forward="true" selection-start-line="2" selection-start-column="45" selection-end-line="2" selection-end-column="45" />
           <folding />
         </state>
       </provider>
