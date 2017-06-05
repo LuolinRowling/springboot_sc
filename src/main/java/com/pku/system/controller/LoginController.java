@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 //import org.apache.shiro.SecurityUtils;
 //import org.apache.shiro.authc.UsernamePasswordToken;
 //import org.apache.shiro.subject.Subject;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class LoginController {
     @Autowired
     RoleService roleService;
 
+    private Logger logger = Logger.getLogger(getClass());
     @ApiOperation(value = "注册", notes = "注册notes", produces = "application/json")
     @RequestMapping(value="/login",method = RequestMethod.GET)
     @ResponseBody
@@ -41,7 +43,8 @@ public class LoginController {
         User userComplete = userService.selectByName(user.getUsername());
         Role role = roleService.selectById(userComplete.getR_id());
         userComplete.setRole(role);
-
+        logger.info("login ajax!");
+        logger.error("login error!");
         if(loginType){
             //如果验证通过,则将用户信息传到前台
             request.setAttribute("user",userComplete);
